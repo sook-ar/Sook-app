@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>السوق</title>
+<meta name="theme-color" content="#12242B" />
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icon-192.png" />
+<link rel="apple-touch-icon" href="icon-192.png" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<style>
+  body { font-family: 'IBM Plex Sans Arabic', sans-serif; background:#12242B; color:#F2E9D8; }
+  .disp { font-family: 'Cairo', sans-serif; }
+  .mono { font-family: 'IBM Plex Mono', monospace; }
+  .ticket { position: relative; }
+  .ticket::before, .ticket::after {
+    content: ""; position: absolute; width: 16px; height: 16px; border-radius: 999px;
+    background: #12242B; top: 50%; transform: translateY(-50%);
+  }
+  .ticket::before { right: -8px; }
+  .ticket::after { left: -8px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useCallback } = React;
+
+const KV_KEY = "souk-data-v1";
+const DEFAULT_BALANCE = 1000;
+const defaultData = () => ({ listings: [], transactions: [], wallets: {}, commissionRate: 0.05, totalCommission: 0 });
+
+let sb = null;
+let CONFIG_OK = false;
+try {
+  if (window.SUPABASE_URL && window.SUPABASE_ANON_KEY && !window.SUPABASE_URL.includes("PASTE")) {
+    sb = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+    CONFIG_OK = true;
+  }
+} catch (e) { CONFIG_OK = false; }
+
+async function kvGet(key) {
+  const { data, error } = await sb.from("kv_store").select("value").eq("key", key).maybeSingle();
+  if (error) throw error;
+  return data ? data.value : null;
+}
+async function kvSet(key, value) {
+  const { error } = await sb.from("kv_store").upsert({ key, value, updated_at: new Date().toISOString() });
+  if (error) throw error;
+}
+
+function fmt(n) { return new Intl.NumberFormat("ar-MA", { maximumFractionDigits: 2 }).format(n); }
+
+function StarMark({ size = 28, className = "" }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" className={className}>
+      <g fill="currentColor">
+        <path d="M50 2 L61 39 L98 50 L61 61 L50 98 L39 61 L2 50 L39 39 Z" />
+        <path d="M50 20 L57 43 L80 50 L57 57 L50 80 L43 57 L20 50 L43 43 Z" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.5" />
+      </g>
+    </svg>
+  );
+}
+
+function ConfigMissing() {
+  return (
+    <div className="min-h-screen flex items-center justify-center px-6 text-center">
+      <div className="max-w-md">
+        <div className="text-[#E8A33D] flex justify-center mb-4"><StarMark size={40} /></div>
+        <h1 className="disp text-2xl font-bold mb-3">خاصك تعمر config.js</h1>
+        <p className="text-[#A8BBB8] leading-relaxed">
+          حط SUPABASE_URL و SUPABASE_ANON_KEY ديالك فملف <code className="bg-[#1A343B] px-1 rounded">config.js</code>،
+          شوف README.md باش تعرف كيفاش.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [user, setUser] = useState(null);
+  const [nameInput, setNameInput] = useState("");
+  const [tab, setTab] = useState("browse");
+  const [toast, setToast] = useState(null);
+
+  const showToast = (msg, kind = "ok") => { setToast({ msg, kind }); setTimeout(() => setToast(null), 2600); };
+
+  const load = useCallback(async () => {
+    setLoading(true); setError("");
+    try {
+      const val = await kvGet(KV_KEY);
+      if (val) setData(val);
+      else { const fresh = defaultData(); await kvSet(KV_KEY, fresh); setData(fresh); }
+    } catch (e) { setError("ما قدرتش نجيب المعطيات. تأكد من config.js وقاعدة البيانات."); }
+    finally { setLoading(false); }
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const persist = async (next) => {
+    setSaving(true);
+    try { await kvSet(KV_KEY, next); setData(next); }
+    catch (e) { showToast("خطأ: ما تسجلاتش التغييرات ديالك", "err"); }
+    finally { setSaving(false); }
+  };
+
+  const enterMarket = async () => {
+    const name = nameInput.trim();
+    if (!name) return;
+    let next = data;
+    if (!(name in data.wallets)) {
+      next = { ...data, wallets: { ...data.wallets, [name]: DEFAULT_BALANCE } };
+      await persist(next);
+    }
+    setUser(name);
+  };
+
+  const postListing = async ({ title, type, price }) => {
+    const listing = { id: crypto.randomUUID(), title, type, price: Number(price), seller: user, createdAt: Date.now(), sold: false };
+    await persist({ ...data, listings: [listing, ...data.listings] });
+    showToast("تسجل السلعة/الخدمة ديالك فالسوق");
+    setTab("browse");
+  };
+
+  const buyListing = async (listing) => {
+    if (listing.seller === user) { showToast("ما يمكنش تشري شي حاجة ديالك نتا", "err"); return; }
+    const buyerBalance = data.wallets[user] ?? 0;
+    if (buyerBalance < listing.price) { showToast("الرصيد ديالك ما كافيش", "err"); return; }
+    const commission = +(listing.price * data.commissionRate).toFixed(2);
+    const sellerAmount = +(listing.price - commission).toFixed(2);
+    const tx = { id: crypto.randomUUID(), listingId: listing.id, title: listing.title, buyer: user, seller: listing.seller, price: listing.price, commission, sellerAmount, at: Date.now() };
+    const next = {
+      ...data,
+      listings: data.listings.map(l => l.id === listing.id ? { ...l, sold: true } : l),
+      transactions: [tx, ...data.transactions],
+      wallets: { ...data.wallets, [user]: +(buyerBalance - listing.price).toFixed(2), [listing.seller]: +((data.wallets[listing.seller] ?? 0) + sellerAmount).toFixed(2) },
+      totalCommission: +(data.totalCommission + commission).toFixed(2),
+    };
+    await persist(next);
+    showToast(`صفقة تمت! خديتي نسبة ${fmt(commission)} درهم`);
+  };
+
+  const updateRate = async (rate) => persist({ ...data, commissionRate: rate });
+  const resetDemo = async () => { await persist(defaultData()); showToast("رجعو المعطيات للبداية"); };
+
+  if (!CONFIG_OK) return <ConfigMissing />;
+  if (loading) return <div className="min-h-screen flex items-center justify-center">كيتحمل...</div>;
+
+  return (
+    <div>
+      {error && (
+        <div className="bg-[#C1543F] text-white text-sm text-center py-2 px-4 flex items-center justify-center gap-3">
+          {error}<button onClick={load} className="underline">عاود جرب</button>
+        </div>
+      )}
+      {toast && (
+        <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-lg text-sm shadow-lg ${toast.kind === "err" ? "bg-[#C1543F]" : "bg-[#7FA66B]"} text-[#12242B] font-semibold`}>
+          {toast.msg}
+        </div>
+      )}
+      {!user ? (
+        <Landing nameInput={nameInput} setNameInput={setNameInput} onEnter={enterMarket} />
+      ) : (
+        <MarketApp data={data} user={user} tab={tab} setTab={setTab} saving={saving}
+          onPost={postListing} onBuy={buyListing} onRate={updateRate} onReset={resetDemo}
+          onSwitchUser={() => setUser(null)} />
+      )}
+    </div>
+  );
+}
+
+function Landing({ nameInput, setNameInput, onEnter }) {
+  return (
+    <div className="max-w-lg mx-auto px-6 pt-24 pb-16 text-center">
+      <div className="flex justify-center mb-6 text-[#E8A33D]"><StarMark size={44} /></div>
+      <h1 className="disp text-4xl font-extrabold mb-3">السوق</h1>
+      <p className="text-[#A8BBB8] leading-relaxed mb-10">
+        منصة كايدخلو ليها الناس، كايحطو شي حاجة للبيع — سلعة ولا خدمة — وكل ما تتم صفقة، تاخد نسبتك تلقائيا.
+      </p>
+      <div className="bg-[#1A343B] rounded-2xl p-6 text-right">
+        <label className="text-sm text-[#A8BBB8] block mb-2">داخل بسميتك باش تبدا</label>
+        <div className="flex gap-2">
+          <input value={nameInput} onChange={e => setNameInput(e.target.value)} onKeyDown={e => e.key === "Enter" && onEnter()}
+            placeholder="مثلا: يوسف" className="flex-1 bg-[#12242B] border border-[#2E4E52] rounded-lg px-4 py-3 outline-none focus:border-[#E8A33D] text-right" />
+          <button onClick={onEnter} disabled={!nameInput.trim()} className="bg-[#E8A33D] disabled:opacity-40 text-[#12242B] font-bold rounded-lg px-5 py-3 disp">دخول</button>
+        </div>
+        <p className="text-xs text-[#6E8A87] mt-3">كتبدا ب‑{DEFAULT_BALANCE} درهم وهمي.</p>
+      </div>
+    </div>
+  );
+}
+
+const TABS = [
+  { id: "browse", label: "السوق" },
+  { id: "sell", label: "بيع شي حاجة" },
+  { id: "wallet", label: "المحفظة" },
+  { id: "admin", label: "لوحة التحكم" },
+];
+
+function MarketApp({ data, user, tab, setTab, saving, onPost, onBuy, onRate, onReset, onSwitchUser }) {
+  const balance = data.wallets[user] ?? 0;
+  return (
+    <div className="max-w-3xl mx-auto px-4 pb-24">
+      <header className="flex items-center justify-between py-5">
+        <div className="flex items-center gap-2 text-[#E8A33D]">
+          <StarMark size={24} /><span className="disp text-xl font-extrabold text-[#F2E9D8]">السوق</span>
+        </div>
+        <div className="flex items-center gap-3 text-sm">
+          {saving && <span className="text-[#6E8A87]">...كيتسجل</span>}
+          <span className="text-[#A8BBB8]">سلام <b className="text-[#F2E9D8]">{user}</b></span>
+          <button onClick={onSwitchUser} className="text-xs text-[#E8A33D] underline">بدل المستخدم</button>
+        </div>
+      </header>
+
+      <div className="bg-[#1A343B] rounded-xl px-5 py-4 mb-6 flex items-center justify-between">
+        <span className="text-[#A8BBB8] text-sm">الرصيد ديالك</span>
+        <span className="mono text-2xl font-semibold text-[#7FA66B]">{fmt(balance)} DH</span>
+      </div>
+
+      <nav className="flex gap-1 bg-[#1A343B] rounded-xl p-1 mb-6">
+        {TABS.map(t => (
+          <button key={t.id} onClick={() => setTab(t.id)}
+            className={`flex-1 py-2.5 rounded-lg text-sm transition ${tab === t.id ? "bg-[#E8A33D] text-[#12242B] font-bold" : "text-[#A8BBB8]"}`}>
+            {t.label}
+          </button>
+        ))}
+      </nav>
+
+      {tab === "browse" && <Browse data={data} user={user} onBuy={onBuy} />}
+      {tab === "sell" && <Sell onPost={onPost} />}
+      {tab === "wallet" && <WalletView data={data} user={user} />}
+      {tab === "admin" && <Admin data={data} onRate={onRate} onReset={onReset} />}
+    </div>
+  );
+}
+
+function Browse({ data, user, onBuy }) {
+  const active = data.listings.filter(l => !l.sold);
+  if (active.length === 0) return <EmptyState title="مازال ماكاين والو فالسوق" body="كون أول واحد يحط شي حاجة للبيع." />;
+  return (
+    <div className="grid sm:grid-cols-2 gap-4">
+      {active.map(l => (
+        <div key={l.id} className="ticket bg-[#1A343B] rounded-xl p-5">
+          <div className="flex items-center justify-between mb-3">
+            <span className={`text-xs px-2 py-1 rounded-full font-semibold ${l.type === "product" ? "bg-[#2E4E52] text-[#F2E9D8]" : "bg-[#3D2E1A] text-[#E8A33D]"}`}>
+              {l.type === "product" ? "سلعة" : "خدمة"}
+            </span>
+          </div>
+          <h3 className="disp font-bold text-lg mb-1">{l.title}</h3>
+          <p className="text-xs text-[#6E8A87] mb-4">البائع: {l.seller}</p>
+          <div className="border-t border-dashed border-[#2E4E52] my-3" />
+          <div className="flex items-center justify-between">
+            <span className="mono text-xl font-semibold text-[#E8A33D]">{fmt(l.price)} DH</span>
+            <button onClick={() => onBuy(l)} disabled={l.seller === user}
+              className="bg-[#7FA66B] disabled:opacity-30 text-[#12242B] font-bold text-sm rounded-lg px-4 py-2">شري</button>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Sell({ onPost }) {
+  const [title, setTitle] = useState("");
+  const [type, setType] = useState("product");
+  const [price, setPrice] = useState("");
+  const submit = () => { if (!title.trim() || !price || Number(price) <= 0) return; onPost({ title: title.trim(), type, price }); setTitle(""); setPrice(""); };
+  return (
+    <div className="bg-[#1A343B] rounded-xl p-6 space-y-5">
+      <div>
+        <label className="text-sm text-[#A8BBB8] block mb-2">شنو غادي تبيع؟</label>
+        <div className="flex gap-2">
+          {[{ id: "product", label: "سلعة" }, { id: "service", label: "خدمة" }].map(o => (
+            <button key={o.id} onClick={() => setType(o.id)} className={`flex-1 py-2.5 rounded-lg text-sm font-semibold ${type === o.id ? "bg-[#E8A33D] text-[#12242B]" : "bg-[#12242B] text-[#A8BBB8]"}`}>{o.label}</button>
+          ))}
+        </div>
+      </div>
+      <div>
+        <label className="text-sm text-[#A8BBB8] block mb-2">العنوان</label>
+        <input value={title} onChange={e => setTitle(e.target.value)} placeholder="مثلا: درس فالطبخ، ولا هاتف مستعمل"
+          className="w-full bg-[#12242B] border border-[#2E4E52] rounded-lg px-4 py-3 outline-none focus:border-[#E8A33D] text-right" />
+      </div>
+      <div>
+        <label className="text-sm text-[#A8BBB8] block mb-2">الثمن (درهم)</label>
+        <input type="number" value={price} onChange={e => setPrice(e.target.value)} placeholder="0"
+          className="w-full mono bg-[#12242B] border border-[#2E4E52] rounded-lg px-4 py-3 outline-none focus:border-[#E8A33D] text-right" />
+      </div>
+      <button onClick={submit} disabled={!title.trim() || !price} className="w-full bg-[#E8A33D] disabled:opacity-40 text-[#12242B] font-bold rounded-lg py-3 disp">حط فالسوق</button>
+    </div>
+  );
+}
+
+function WalletView({ data, user }) {
+  const mine = data.transactions.filter(t => t.buyer === user || t.seller === user);
+  return (
+    <div className="space-y-4">
+      {mine.length === 0 && <EmptyState title="مازال ماكاين حتى صفقة" body="الصفقات ديالك غادي يبانو هنا." />}
+      {mine.map(t => {
+        const isSeller = t.seller === user;
+        return (
+          <div key={t.id} className="ticket bg-[#1A343B] rounded-xl p-4 flex items-center justify-between">
+            <div>
+              <p className="font-semibold text-sm">{t.title}</p>
+              <p className="text-xs text-[#6E8A87]">{isSeller ? `بعتيها ل${t.buyer}` : `شريتيها من ${t.seller}`}</p>
+            </div>
+            <div className="text-left">
+              <p className={`mono font-semibold ${isSeller ? "text-[#7FA66B]" : "text-[#C1543F]"}`}>{isSeller ? "+" : "-"}{fmt(isSeller ? t.sellerAmount : t.price)} DH</p>
+              {isSeller && <p className="text-[10px] text-[#6E8A87]">نسبة المنصة: {fmt(t.commission)} DH</p>}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function Admin({ data, onRate, onReset }) {
+  const [confirmReset, setConfirmReset] = useState(false);
+  return (
+    <div className="space-y-5">
+      <div className="grid grid-cols-2 gap-4">
+        <div className="bg-[#1A343B] rounded-xl p-5">
+          <p className="text-xs text-[#A8BBB8] mb-1">مجموع النسبة اللي خديتي</p>
+          <p className="mono text-2xl font-bold text-[#E8A33D]">{fmt(data.totalCommission)} DH</p>
+        </div>
+        <div className="bg-[#1A343B] rounded-xl p-5">
+          <p className="text-xs text-[#A8BBB8] mb-1">عدد الصفقات</p>
+          <p className="mono text-2xl font-bold">{data.transactions.length}</p>
+        </div>
+      </div>
+      <div className="bg-[#1A343B] rounded-xl p-5">
+        <p className="text-sm text-[#A8BBB8] mb-3">نسبة العمولة: <b className="text-[#F2E9D8]">{Math.round(data.commissionRate * 100)}%</b></p>
+        <input type="range" min="0" max="30" value={Math.round(data.commissionRate * 100)} onChange={e => onRate(Number(e.target.value) / 100)} className="w-full accent-[#E8A33D]" />
+      </div>
+      <div className="bg-[#1A343B] rounded-xl p-5">
+        <p className="text-sm text-[#A8BBB8] mb-3">آخر الصفقات</p>
+        {data.transactions.length === 0 && <p className="text-xs text-[#6E8A87]">ماكاين حتى صفقة بعد.</p>}
+        <div className="space-y-2 max-h-64 overflow-y-auto">
+          {data.transactions.slice(0, 20).map(t => (
+            <div key={t.id} className="flex justify-between text-xs border-b border-[#2E4E52] pb-2">
+              <span>{t.buyer} ← {t.seller} · {t.title}</span>
+              <span className="mono text-[#E8A33D]">{fmt(t.commission)} DH</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="bg-[#1A343B] rounded-xl p-5 flex items-center justify-between">
+        <div>
+          <p className="text-sm font-semibold">رجاع كلشي للبداية</p>
+          <p className="text-xs text-[#6E8A87]">كيمسح جميع البيانات.</p>
+        </div>
+        {confirmReset ? (
+          <div className="flex gap-2">
+            <button onClick={() => { onReset(); setConfirmReset(false); }} className="bg-[#C1543F] text-white text-sm font-bold rounded-lg px-3 py-2">متأكد</button>
+            <button onClick={() => setConfirmReset(false)} className="text-[#A8BBB8]">إلغاء</button>
+          </div>
+        ) : (
+          <button onClick={() => setConfirmReset(true)} className="text-sm text-[#A8BBB8]">بدا من جديد</button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function EmptyState({ title, body }) {
+  return (
+    <div className="text-center py-16 text-[#6E8A87]">
+      <p className="font-semibold text-[#A8BBB8] mb-1">{title}</p>
+      <p className="text-sm">{body}</p>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+}
+</script>
+</body>
+</html>
