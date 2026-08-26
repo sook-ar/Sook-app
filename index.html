@@ -12,7 +12,6 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
 <style>
   body { font-family: 'IBM Plex Sans Arabic', sans-serif; background:#12242B; color:#F2E9D8; margin:0; }
@@ -46,24 +45,40 @@ function defaultData() {
   return { listings: [], transactions: [], wallets: {}, commissionRate: 0.05, totalCommission: 0 };
 }
 
-var sb = null;
 var CONFIG_OK = false;
 try {
   if (window.SUPABASE_URL && window.SUPABASE_ANON_KEY && window.SUPABASE_URL.indexOf("PASTE") === -1) {
-    sb = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
     CONFIG_OK = true;
   }
 } catch (e) { CONFIG_OK = false; }
 
+function sbHeaders() {
+  return {
+    "apikey": window.SUPABASE_ANON_KEY,
+    "Authorization": "Bearer " + window.SUPABASE_ANON_KEY,
+    "Content-Type": "application/json"
+  };
+}
+
 function kvGet(key) {
-  return sb.from("kv_store").select("value").eq("key", key).maybeSingle().then(function (res) {
-    if (res.error) throw res.error;
-    return res.data ? res.data.value : null;
+  var url = window.SUPABASE_URL + "/rest/v1/kv_store?select=value&key=eq." + encodeURIComponent(key);
+  return fetch(url, { headers: sbHeaders() }).then(function (res) {
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    return res.json();
+  }).then(function (rows) {
+    return (rows && rows.length > 0) ? rows[0].value : null;
   });
 }
 function kvSet(key, value) {
-  return sb.from("kv_store").upsert({ key: key, value: value, updated_at: new Date().toISOString() }).then(function (res) {
-    if (res.error) throw res.error;
+  var url = window.SUPABASE_URL + "/rest/v1/kv_store";
+  var headers = sbHeaders();
+  headers["Prefer"] = "resolution=merge-duplicates";
+  return fetch(url, {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify([{ key: key, value: value, updated_at: new Date().toISOString() }])
+  }).then(function (res) {
+    if (!res.ok) throw new Error("HTTP " + res.status);
   });
 }
 
@@ -263,4 +278,142 @@ function MarketApp(props) {
 }
 
 function Browse(props) {
-  var data = props.data, user = props.user, onBuy = props.on
+  var data = props.data, user = props.user, onBuy = props.onBuy;
+  var active = data.listings.filter(function (l) { return !l.sold; });
+  if (active.length === 0) return h(EmptyState, { title: "مازال ماكاين والو فالسوق", body: "كون أول واحد يحط شي حاجة للبيع." });
+  return h("div", { className: "grid sm:grid-cols-2 gap-4" },
+    active.map(function (l) {
+      return h("div", { key: l.id, className: "ticket bg-[#1A343B] rounded-xl p-5" },
+        h("div", { className: "flex items-center justify-between mb-3" },
+          h("span", { className: "text-xs px-2 py-1 rounded-full font-semibold " + (l.type === "product" ? "bg-[#2E4E52] text-[#F2E9D8]" : "bg-[#3D2E1A] text-[#E8A33D]") }, l.type === "product" ? "سلعة" : "خدمة")
+        ),
+        h("h3", { className: "disp font-bold text-lg mb-1" }, l.title),
+        h("p", { className: "text-xs text-[#6E8A87] mb-4" }, "البائع: " + l.seller),
+        h("div", { className: "border-t border-dashed border-[#2E4E52] my-3" }),
+        h("div", { className: "flex items-center justify-between" },
+          h("span", { className: "mono text-xl font-semibold text-[#E8A33D]" }, fmt(l.price) + " DH"),
+          h("button", { onClick: function () { onBuy(l); }, disabled: l.seller === user, className: "bg-[#7FA66B] disabled:opacity-30 text-[#12242B] font-bold text-sm rounded-lg px-4 py-2" }, "شري")
+        )
+      );
+    })
+  );
+}
+
+function Sell(props) {
+  var onPost = props.onPost;
+  var s1 = React.useState(""); var title = s1[0], setTitle = s1[1];
+  var s2 = React.useState("product"); var type = s2[0], setType = s2[1];
+  var s3 = React.useState(""); var price = s3[0], setPrice = s3[1];
+  function submit() {
+    if (!title.trim() || !price || Number(price) <= 0) return;
+    onPost({ title: title.trim(), type: type, price: price });
+    setTitle(""); setPrice("");
+  }
+  return h("div", { className: "bg-[#1A343B] rounded-xl p-6 space-y-5" },
+    h("div", null,
+      h("label", { className: "text-sm text-[#A8BBB8] block mb-2" }, "شنو غادي تبيع؟"),
+      h("div", { className: "flex gap-2" },
+        [{ id: "product", label: "سلعة" }, { id: "service", label: "خدمة" }].map(function (o) {
+          return h("button", { key: o.id, onClick: function () { setType(o.id); }, className: "flex-1 py-2.5 rounded-lg text-sm font-semibold " + (type === o.id ? "bg-[#E8A33D] text-[#12242B]" : "bg-[#12242B] text-[#A8BBB8]") }, o.label);
+        })
+      )
+    ),
+    h("div", null,
+      h("label", { className: "text-sm text-[#A8BBB8] block mb-2" }, "العنوان"),
+      h("input", { value: title, onChange: function (e) { setTitle(e.target.value); }, placeholder: "مثلا: درس فالطبخ، ولا هاتف مستعمل", className: "w-full bg-[#12242B] border border-[#2E4E52] rounded-lg px-4 py-3 outline-none focus:border-[#E8A33D] text-right" })
+    ),
+    h("div", null,
+      h("label", { className: "text-sm text-[#A8BBB8] block mb-2" }, "الثمن (درهم)"),
+      h("input", { type: "number", value: price, onChange: function (e) { setPrice(e.target.value); }, placeholder: "0", className: "w-full mono bg-[#12242B] border border-[#2E4E52] rounded-lg px-4 py-3 outline-none focus:border-[#E8A33D] text-right" })
+    ),
+    h("button", { onClick: submit, disabled: !title.trim() || !price, className: "w-full bg-[#E8A33D] disabled:opacity-40 text-[#12242B] font-bold rounded-lg py-3 disp" }, "حط فالسوق")
+  );
+}
+
+function WalletView(props) {
+  var data = props.data, user = props.user;
+  var mine = data.transactions.filter(function (t) { return t.buyer === user || t.seller === user; });
+  return h("div", { className: "space-y-4" },
+    mine.length === 0 && h(EmptyState, { title: "مازال ماكاين حتى صفقة", body: "الصفقات ديالك غادي يبانو هنا." }),
+    mine.map(function (t) {
+      var isSeller = t.seller === user;
+      return h("div", { key: t.id, className: "ticket bg-[#1A343B] rounded-xl p-4 flex items-center justify-between" },
+        h("div", null,
+          h("p", { className: "font-semibold text-sm" }, t.title),
+          h("p", { className: "text-xs text-[#6E8A87]" }, isSeller ? ("بعتيها ل" + t.buyer) : ("شريتيها من " + t.seller))
+        ),
+        h("div", { className: "text-left" },
+          h("p", { className: "mono font-semibold " + (isSeller ? "text-[#7FA66B]" : "text-[#C1543F]") }, (isSeller ? "+" : "-") + fmt(isSeller ? t.sellerAmount : t.price) + " DH"),
+          isSeller && h("p", { className: "text-[10px] text-[#6E8A87]" }, "نسبة المنصة: " + fmt(t.commission) + " DH")
+        )
+      );
+    })
+  );
+}
+
+function Admin(props) {
+  var data = props.data, onRate = props.onRate, onReset = props.onReset;
+  var s1 = React.useState(false); var confirmReset = s1[0], setConfirmReset = s1[1];
+  return h("div", { className: "space-y-5" },
+    h("div", { className: "grid grid-cols-2 gap-4" },
+      h("div", { className: "bg-[#1A343B] rounded-xl p-5" },
+        h("p", { className: "text-xs text-[#A8BBB8] mb-1" }, "مجموع النسبة اللي خديتي"),
+        h("p", { className: "mono text-2xl font-bold text-[#E8A33D]" }, fmt(data.totalCommission) + " DH")
+      ),
+      h("div", { className: "bg-[#1A343B] rounded-xl p-5" },
+        h("p", { className: "text-xs text-[#A8BBB8] mb-1" }, "عدد الصفقات"),
+        h("p", { className: "mono text-2xl font-bold" }, data.transactions.length)
+      )
+    ),
+    h("div", { className: "bg-[#1A343B] rounded-xl p-5" },
+      h("p", { className: "text-sm text-[#A8BBB8] mb-3" }, "نسبة العمولة: ", h("b", { className: "text-[#F2E9D8]" }, Math.round(data.commissionRate * 100) + "%")),
+      h("input", { type: "range", min: "0", max: "30", value: Math.round(data.commissionRate * 100), onChange: function (e) { onRate(Number(e.target.value) / 100); }, className: "w-full accent-[#E8A33D]" })
+    ),
+    h("div", { className: "bg-[#1A343B] rounded-xl p-5" },
+      h("p", { className: "text-sm text-[#A8BBB8] mb-3" }, "آخر الصفقات"),
+      data.transactions.length === 0 && h("p", { className: "text-xs text-[#6E8A87]" }, "ماكاين حتى صفقة بعد."),
+      h("div", { className: "space-y-2 max-h-64 overflow-y-auto" },
+        data.transactions.slice(0, 20).map(function (t) {
+          return h("div", { key: t.id, className: "flex justify-between text-xs border-b border-[#2E4E52] pb-2" },
+            h("span", null, t.buyer + " ← " + t.seller + " · " + t.title),
+            h("span", { className: "mono text-[#E8A33D]" }, fmt(t.commission) + " DH")
+          );
+        })
+      )
+    ),
+    h("div", { className: "bg-[#1A343B] rounded-xl p-5 flex items-center justify-between" },
+      h("div", null,
+        h("p", { className: "text-sm font-semibold" }, "رجاع كلشي للبداية"),
+        h("p", { className: "text-xs text-[#6E8A87]" }, "كيمسح جميع البيانات.")
+      ),
+      confirmReset
+        ? h("div", { className: "flex gap-2" },
+            h("button", { onClick: function () { onReset(); setConfirmReset(false); }, className: "bg-[#C1543F] text-white text-sm font-bold rounded-lg px-3 py-2" }, "متأكد"),
+            h("button", { onClick: function () { setConfirmReset(false); }, className: "text-[#A8BBB8]" }, "إلغاء")
+          )
+        : h("button", { onClick: function () { setConfirmReset(true); }, className: "text-sm text-[#A8BBB8]" }, "بدا من جديد")
+    )
+  );
+}
+
+function EmptyState(props) {
+  return h("div", { className: "text-center py-16 text-[#6E8A87]" },
+    h("p", { className: "font-semibold text-[#A8BBB8] mb-1" }, props.title),
+    h("p", { className: "text-sm" }, props.body)
+  );
+}
+
+var fallbackEl = document.getElementById("fallback");
+if (fallbackEl) fallbackEl.remove();
+ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("sw.js").catch(function () {});
+  });
+}
+</script>
+</body>
+</html>
