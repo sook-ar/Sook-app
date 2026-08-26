@@ -1,356 +1,419 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html dir="rtl" lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق البيع والشراء</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
-
-        body {
-            background-color: #f4f6f8;
-            color: #333;
-        }
-
-        /* Header / الشريط العلوي */
-        header {
-            background-color: #ffffff;
-            border-bottom: 1px solid #ddd;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .logo {
-            font-size: 20px;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-
-        .header-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .header-btn {
-            background: #eef2f5;
-            border: 1px solid #ccc;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px;
-        }
-
-        .header-btn:hover {
-            background: #e2e8f0;
-        }
-
-        .lang-select {
-            padding: 5px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            background: #fff;
-            font-size: 13px;
-        }
-
-        /* Container / المحتوى الرئيسي */
-        .container {
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 0 10px;
-        }
-
-        /* Post Card / بطاقة المنشور والمنتج */
-        .post-card {
-            background: #ffffff;
-            border: 1px solid #e1e4e8;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-
-        .post-header {
-            padding: 12px 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .seller-avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: #27ae60;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-        .seller-info h4 {
-            font-size: 14px;
-            margin-bottom: 2px;
-        }
-
-        .seller-info span {
-            font-size: 11px;
-            color: #777;
-        }
-
-        .product-image {
-            width: 100%;
-            height: 250px;
-            background-color: #eee;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #888;
-            font-size: 14px;
-        }
-
-        .product-details {
-            padding: 15px;
-        }
-
-        .product-title {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .product-price {
-            font-size: 15px;
-            color: #27ae60;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        .product-description {
-            font-size: 13px;
-            color: #555;
-            line-height: 1.4;
-        }
-
-        /* Post Actions / أزرا التفاعل أسفل كل منشور */
-        .post-actions {
-            display: flex;
-            justify-content: space-between;
-            border-top: 1px solid #eee;
-            border-bottom: 1px solid #eee;
-            padding: 5px 0;
-            background: #fafafa;
-        }
-
-        .action-btn {
-            flex: 1;
-            background: transparent;
-            border: none;
-            padding: 8px 0;
-            font-size: 13px;
-            color: #555;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-        }
-
-        .action-btn:hover {
-            background: #f0f0f0;
-        }
-
-        .action-btn.liked {
-            color: #e74c3c;
-        }
-
-        .action-btn.saved {
-            color: #f39c12;
-        }
-
-        /* Comments Section / قسم التعليقات */
-        .comments-section {
-            padding: 12px 15px;
-            background: #fff;
-        }
-
-        .comment-input-group {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-
-        .comment-input-group input {
-            flex: 1;
-            padding: 7px 12px;
-            border: 1px solid #ccc;
-            border-radius: 15px;
-            font-size: 12px;
-            outline: none;
-        }
-
-        .comment-input-group button {
-            background: #27ae60;
-            color: white;
-            border: none;
-            padding: 7px 12px;
-            border-radius: 15px;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        .comments-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .comment-item {
-            font-size: 12px;
-            background: #f4f6f8;
-            padding: 6px 10px;
-            border-radius: 8px;
-        }
-
-        .comment-item strong {
-            color: #333;
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>السوق</title>
+<meta name="theme-color" content="#12242B" />
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icon-192.png" />
+<link rel="apple-touch-icon" href="icon-192.png" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="config.js"></script>
+<style>
+  body { font-family: 'IBM Plex Sans Arabic', sans-serif; background:#12242B; color:#F2E9D8; margin:0; }
+  .disp { font-family: 'Cairo', sans-serif; }
+  .mono { font-family: 'IBM Plex Mono', monospace; }
+  .ticket { position: relative; }
+  .ticket::before, .ticket::after {
+    content: ""; position: absolute; width: 16px; height: 16px; border-radius: 999px;
+    background: #12242B; top: 50%; transform: translateY(-50%);
+  }
+  .ticket::before { right: -8px; }
+  .ticket::after { left: -8px; }
+</style>
 </head>
 <body>
+<div id="root"></div>
+<div id="fallback" style="padding:24px;text-align:center;font-family:sans-serif;color:#F2E9D8;">
+  كيتحمل...
+</div>
 
-    <!-- Header: شريط التحكم العلوي -->
-    <header>
-        <div class="logo">متجري</div>
-        
-        <div class="header-controls">
-            <!-- تغيير اللغة -->
-            <select class="lang-select" onchange="changeLanguage(this.value)">
-                <option value="ar">العربية</option>
-                <option value="fr">Français</option>
-                <option value="en">English</option>
-            </select>
+<script>
+window.addEventListener("error", function (e) {
+  var f = document.getElementById("fallback");
+  if (f) f.textContent = "خطأ: " + e.message;
+});
 
-            <!-- زر الملف الشخصي -->
-            <button class="header-btn" onclick="openProfile()">👤 الملف الشخصي</button>
-            
-            <!-- زر الإعدادات -->
-            <button class="header-btn" onclick="openSettings()">⚙️ الإعدادات</button>
-        </div>
-    </header>
+var h = React.createElement;
+var KV_KEY = "souk-data-v1";
+var DEFAULT_BALANCE = 1000;
+function defaultData() {
+  return { listings: [], transactions: [], wallets: {}, commissionRate: 0.05, totalCommission: 0 };
+}
 
-    <!-- Content: المنشورات والمنتجات -->
-    <div class="container">
+var CONFIG_OK = false;
+try {
+  if (window.SUPABASE_URL && window.SUPABASE_ANON_KEY && window.SUPABASE_URL.indexOf("PASTE") === -1) {
+    CONFIG_OK = true;
+  }
+} catch (e) { CONFIG_OK = false; }
 
-        <!-- المنشور الأول -->
-        <div class="post-card">
-            <div class="post-header">
-                <div class="seller-avatar">ع</div>
-                <div class="seller-info">
-                    <h4>علي السلاوي</h4>
-                    <span>قبل 15 دقيقة • الدار البيضاء</span>
-                </div>
-            </div>
+function sbHeaders() {
+  return {
+    "apikey": window.SUPABASE_ANON_KEY,
+    "Authorization": "Bearer " + window.SUPABASE_ANON_KEY,
+    "Content-Type": "application/json"
+  };
+}
 
-            <!-- صورة المنتج -->
-            <div class="product-image">
-                [صورة صورة الهاتف / المنتج]
-            </div>
+function kvGet(key) {
+  var url = window.SUPABASE_URL + "/rest/v1/kv_store?select=value&key=eq." + encodeURIComponent(key);
+  return fetch(url, { headers: sbHeaders() }).then(function (res) {
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    return res.json();
+  }).then(function (rows) {
+    return (rows && rows.length > 0) ? rows[0].value : null;
+  });
+}
+function kvSet(key, value) {
+  var url = window.SUPABASE_URL + "/rest/v1/kv_store";
+  var headers = sbHeaders();
+  headers["Prefer"] = "resolution=merge-duplicates";
+  return fetch(url, {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify([{ key: key, value: value, updated_at: new Date().toISOString() }])
+  }).then(function (res) {
+    if (!res.ok) throw new Error("HTTP " + res.status);
+  });
+}
 
-            <div class="product-details">
-                <div class="product-title">هاتف مستعمل بحالة ممتازة</div>
-                <div class="product-price">2500 درهم</div>
-                <div class="product-description">
-                    للبيع هاتف ممتازي بدون أي عيوب، مع الشاحن والعلبة الأصلية.
-                </div>
-            </div>
+function fmt(n) { return new Intl.NumberFormat("ar-MA", { maximumFractionDigits: 2 }).format(n); }
 
-            <!-- أزرار التفاعل تحت المنشور -->
-            <div class="post-actions">
-                <button class="action-btn" onclick="toggleLike(this)">❤️ إعجاب</button>
-                <button class="action-btn" onclick="focusComment('comment-1')">💬 تعليق</button>
-                <button class="action-btn" onclick="sharePost()">↗️ مشاركة</button>
-                <button class="action-btn" onclick="toggleSave(this)">🔖 حفظ</button>
-            </div>
+function StarMark(props) {
+  var size = props.size || 28;
+  var className = props.className || "";
+  return h("svg", { width: size, height: size, viewBox: "0 0 100 100", className: className },
+    h("g", { fill: "currentColor" },
+      h("path", { d: "M50 2 L61 39 L98 50 L61 61 L50 98 L39 61 L2 50 L39 39 Z" }),
+      h("path", { d: "M50 20 L57 43 L80 50 L57 57 L50 80 L43 57 L20 50 L43 43 Z", fill: "none", stroke: "currentColor", strokeWidth: "1.5", opacity: "0.5" })
+    )
+  );
+}
 
-            <!-- التعليقات -->
-            <div class="comments-section">
-                <div class="comment-input-group">
-                    <input type="text" id="comment-1" placeholder="اكتب تعليقاً واسأل البائع...">
-                    <button onclick="addComment('comment-1', 'list-1')">إرسال</button>
-                </div>
-                <div class="comments-list" id="list-1">
-                    <div class="comment-item">
-                        <strong>ياسين:</strong> واش السعر قابل للتفاوض؟
-                    </div>
-                </div>
-            </div>
-        </div>
+function ConfigMissing() {
+  return h("div", { className: "min-h-screen flex items-center justify-center px-6 text-center" },
+    h("div", { className: "max-w-md" },
+      h("div", { className: "text-[#E8A33D] flex justify-center mb-4" }, h(StarMark, { size: 40 })),
+      h("h1", { className: "disp text-2xl font-bold mb-3" }, "خاصك تعمر config.js"),
+      h("p", { className: "text-[#A8BBB8] leading-relaxed" },
+        "حط SUPABASE_URL و SUPABASE_ANON_KEY ديالك فملف ",
+        h("code", { className: "bg-[#1A343B] px-1 rounded" }, "config.js"),
+        "، شوف README.md باش تعرف كيفاش."
+      )
+    )
+  );
+}
 
-    </div>
+function useSouk() {
+  var R = React;
+  var state = R.useState(null); var data = state[0], setData = state[1];
+  var s2 = R.useState(true); var loading = s2[0], setLoading = s2[1];
+  var s3 = R.useState(false); var saving = s3[0], setSaving = s3[1];
+  var s4 = R.useState(""); var error = s4[0], setError = s4[1];
+  var s5 = R.useState(null); var toast = s5[0], setToast = s5[1];
 
-    <!-- JavaScript الأساسي للتفاعلات -->
-    <script>
-        function openProfile() {
-            alert("فتح شاشة الملف الشخصي");
-        }
+  function showToast(msg, kind) {
+    setToast({ msg: msg, kind: kind || "ok" });
+    setTimeout(function () { setToast(null); }, 2600);
+  }
 
-        function openSettings() {
-            alert("فتح شاشة الإعدادات");
-        }
+  var load = R.useCallback(function () {
+    setLoading(true); setError("");
+    kvGet(KV_KEY).then(function (val) {
+      if (val) { setData(val); return null; }
+      var fresh = defaultData();
+      return kvSet(KV_KEY, fresh).then(function () { setData(fresh); });
+    }).catch(function () {
+      setError("ما قدرتش نجيب المعطيات. تأكد من config.js وقاعدة البيانات.");
+    }).finally(function () { setLoading(false); });
+  }, []);
 
-        function changeLanguage(lang) {
-            alert("تم تغيير اللغة إلى: " + lang);
-        }
+  R.useEffect(function () { load(); }, [load]);
 
-        function toggleLike(btn) {
-            btn.classList.toggle('liked');
-            if(btn.classList.contains('liked')) {
-                btn.innerHTML = "❤️ تم الإعجاب";
-            } else {
-                btn.innerHTML = "❤️ إعجاب";
-            }
-        }
+  function persist(next) {
+    setSaving(true);
+    return kvSet(KV_KEY, next).then(function () { setData(next); })
+      .catch(function () { showToast("خطأ: ما تسجلاتش التغييرات ديالك", "err"); })
+      .finally(function () { setSaving(false); });
+  }
 
-        function toggleSave(btn) {
-            btn.classList.toggle('saved');
-            if(btn.classList.contains('saved')) {
-                btn.innerHTML = "🔖 تم الحفظ";
-            } else {
-                btn.innerHTML = "🔖 حفظ";
-            }
-        }
+  return { data: data, loading: loading, saving: saving, error: error, toast: toast, load: load, persist: persist, showToast: showToast };
+}
 
-        function sharePost() {
-            alert("تم نسخ رابط المنشور للمشاركة");
-        }
+function App() {
+  var souk = useSouk();
+  var data = souk.data, loading = souk.loading, saving = souk.saving, error = souk.error, toast = souk.toast, load = souk.load, persist = souk.persist, showToast = souk.showToast;
 
-        function focusComment(inputId) {
-            document.getElementById(inputId).focus();
-        }
+  var s1 = React.useState(null); var user = s1[0], setUser = s1[1];
+  var s2 = React.useState(""); var nameInput = s2[0], setNameInput = s2[1];
+  var s3 = React.useState("browse"); var tab = s3[0], setTab = s3[1];
 
-        function addComment(inputId, listId) {
-            let input = document.getElementById(inputId);
-            let text = input.value.trim();
-            if(text !== "") {
-                let list = document.getElementById(listId);
-                let newComment = document.createElement('div');
-                newComment.className = 'comment-item';
-                newComment.innerHTML = '<strong>أنت:</strong> ' + text;
-                list.appendChild(newComment);
-                input.value = "";
-            }
-        }
-    </script>
+  function enterMarket() {
+    var name = nameInput.trim();
+    if (!name) return;
+    if (!(name in data.wallets)) {
+      var next = Object.assign({}, data, { wallets: Object.assign({}, data.wallets) });
+      next.wallets[name] = DEFAULT_BALANCE;
+      persist(next).then(function () { setUser(name); });
+    } else {
+      setUser(name);
+    }
+  }
+
+  function postListing(payload) {
+    var listing = { id: crypto.randomUUID(), title: payload.title, type: payload.type, price: Number(payload.price), seller: user, createdAt: Date.now(), sold: false };
+    var next = Object.assign({}, data, { listings: [listing].concat(data.listings) });
+    persist(next).then(function () {
+      showToast("تسجل السلعة/الخدمة ديالك فالسوق");
+      setTab("browse");
+    });
+  }
+
+  function buyListing(listing) {
+    if (listing.seller === user) { showToast("ما يمكنش تشري شي حاجة ديالك نتا", "err"); return; }
+    var buyerBalance = data.wallets[user] || 0;
+    if (buyerBalance < listing.price) { showToast("الرصيد ديالك ما كافيش", "err"); return; }
+    var commission = Math.round(listing.price * data.commissionRate * 100) / 100;
+    var sellerAmount = Math.round((listing.price - commission) * 100) / 100;
+    var tx = { id: crypto.randomUUID(), listingId: listing.id, title: listing.title, buyer: user, seller: listing.seller, price: listing.price, commission: commission, sellerAmount: sellerAmount, at: Date.now() };
+    var wallets = Object.assign({}, data.wallets);
+    wallets[user] = Math.round((buyerBalance - listing.price) * 100) / 100;
+    wallets[listing.seller] = Math.round(((wallets[listing.seller] || 0) + sellerAmount) * 100) / 100;
+    var next = Object.assign({}, data, {
+      listings: data.listings.map(function (l) { return l.id === listing.id ? Object.assign({}, l, { sold: true }) : l; }),
+      transactions: [tx].concat(data.transactions),
+      wallets: wallets,
+      totalCommission: Math.round((data.totalCommission + commission) * 100) / 100
+    });
+    persist(next).then(function () {
+      showToast("صفقة تمت! خديتي نسبة " + fmt(commission) + " درهم");
+    });
+  }
+
+  function updateRate(rate) { persist(Object.assign({}, data, { commissionRate: rate })); }
+  function resetDemo() { persist(defaultData()).then(function () { showToast("رجعو المعطيات للبداية"); }); }
+
+  if (!CONFIG_OK) return h(ConfigMissing);
+  if (loading) return h("div", { className: "min-h-screen flex items-center justify-center" }, "كيتحمل...");
+
+  return h("div", null,
+    error && h("div", { className: "bg-[#C1543F] text-white text-sm text-center py-2 px-4 flex items-center justify-center gap-3" },
+      error, h("button", { onClick: load, className: "underline" }, "عاود جرب")
+    ),
+    toast && h("div", { className: "fixed top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-lg text-sm shadow-lg " + (toast.kind === "err" ? "bg-[#C1543F]" : "bg-[#7FA66B]") + " text-[#12242B] font-semibold" }, toast.msg),
+    !user
+      ? h(Landing, { nameInput: nameInput, setNameInput: setNameInput, onEnter: enterMarket })
+      : h(MarketApp, { data: data, user: user, tab: tab, setTab: setTab, saving: saving, onPost: postListing, onBuy: buyListing, onRate: updateRate, onReset: resetDemo, onSwitchUser: function () { setUser(null); } })
+  );
+}
+
+function Landing(props) {
+  var nameInput = props.nameInput, setNameInput = props.setNameInput, onEnter = props.onEnter;
+  return h("div", { className: "max-w-lg mx-auto px-6 pt-24 pb-16 text-center" },
+    h("div", { className: "flex justify-center mb-6 text-[#E8A33D]" }, h(StarMark, { size: 44 })),
+    h("h1", { className: "disp text-4xl font-extrabold mb-3" }, "السوق"),
+    h("p", { className: "text-[#A8BBB8] leading-relaxed mb-10" },
+      "منصة كايدخلو ليها الناس، كايحطو شي حاجة للبيع — سلعة ولا خدمة — وكل ما تتم صفقة، تاخد نسبتك تلقائيا."
+    ),
+    h("div", { className: "bg-[#1A343B] rounded-2xl p-6 text-right" },
+      h("label", { className: "text-sm text-[#A8BBB8] block mb-2" }, "داخل بسميتك باش تبدا"),
+      h("div", { className: "flex gap-2" },
+        h("input", {
+          value: nameInput,
+          onChange: function (e) { setNameInput(e.target.value); },
+          onKeyDown: function (e) { if (e.key === "Enter") onEnter(); },
+          placeholder: "مثلا: يوسف",
+          className: "flex-1 bg-[#12242B] border border-[#2E4E52] rounded-lg px-4 py-3 outline-none focus:border-[#E8A33D] text-right"
+        }),
+        h("button", { onClick: onEnter, disabled: !nameInput.trim(), className: "bg-[#E8A33D] disabled:opacity-40 text-[#12242B] font-bold rounded-lg px-5 py-3 disp" }, "دخول")
+      ),
+      h("p", { className: "text-xs text-[#6E8A87] mt-3" }, "كتبدا ب‑" + DEFAULT_BALANCE + " درهم وهمي.")
+    )
+  );
+}
+
+var TABS = [
+  { id: "browse", label: "السوق" },
+  { id: "sell", label: "بيع شي حاجة" },
+  { id: "wallet", label: "المحفظة" },
+  { id: "admin", label: "لوحة التحكم" }
+];
+
+function MarketApp(props) {
+  var data = props.data, user = props.user, tab = props.tab, setTab = props.setTab, saving = props.saving, onPost = props.onPost, onBuy = props.onBuy, onRate = props.onRate, onReset = props.onReset, onSwitchUser = props.onSwitchUser;
+  var balance = data.wallets[user] || 0;
+  return h("div", { className: "max-w-3xl mx-auto px-4 pb-24" },
+    h("header", { className: "flex items-center justify-between py-5" },
+      h("div", { className: "flex items-center gap-2 text-[#E8A33D]" },
+        h(StarMark, { size: 24 }), h("span", { className: "disp text-xl font-extrabold text-[#F2E9D8]" }, "السوق")
+      ),
+      h("div", { className: "flex items-center gap-3 text-sm" },
+        saving && h("span", { className: "text-[#6E8A87]" }, "...كيتسجل"),
+        h("span", { className: "text-[#A8BBB8]" }, "سلام ", h("b", { className: "text-[#F2E9D8]" }, user)),
+        h("button", { onClick: onSwitchUser, className: "text-xs text-[#E8A33D] underline" }, "بدل المستخدم")
+      )
+    ),
+    h("div", { className: "bg-[#1A343B] rounded-xl px-5 py-4 mb-6 flex items-center justify-between" },
+      h("span", { className: "text-[#A8BBB8] text-sm" }, "الرصيد ديالك"),
+      h("span", { className: "mono text-2xl font-semibold text-[#7FA66B]" }, fmt(balance) + " DH")
+    ),
+    h("nav", { className: "flex gap-1 bg-[#1A343B] rounded-xl p-1 mb-6" },
+      TABS.map(function (t) {
+        return h("button", {
+          key: t.id, onClick: function () { setTab(t.id); },
+          className: "flex-1 py-2.5 rounded-lg text-sm transition " + (tab === t.id ? "bg-[#E8A33D] text-[#12242B] font-bold" : "text-[#A8BBB8]")
+        }, t.label);
+      })
+    ),
+    tab === "browse" && h(Browse, { data: data, user: user, onBuy: onBuy }),
+    tab === "sell" && h(Sell, { onPost: onPost }),
+    tab === "wallet" && h(WalletView, { data: data, user: user }),
+    tab === "admin" && h(Admin, { data: data, onRate: onRate, onReset: onReset })
+  );
+}
+
+function Browse(props) {
+  var data = props.data, user = props.user, onBuy = props.onBuy;
+  var active = data.listings.filter(function (l) { return !l.sold; });
+  if (active.length === 0) return h(EmptyState, { title: "مازال ماكاين والو فالسوق", body: "كون أول واحد يحط شي حاجة للبيع." });
+  return h("div", { className: "grid sm:grid-cols-2 gap-4" },
+    active.map(function (l) {
+      return h("div", { key: l.id, className: "ticket bg-[#1A343B] rounded-xl p-5" },
+        h("div", { className: "flex items-center justify-between mb-3" },
+          h("span", { className: "text-xs px-2 py-1 rounded-full font-semibold " + (l.type === "product" ? "bg-[#2E4E52] text-[#F2E9D8]" : "bg-[#3D2E1A] text-[#E8A33D]") }, l.type === "product" ? "سلعة" : "خدمة")
+        ),
+        h("h3", { className: "disp font-bold text-lg mb-1" }, l.title),
+        h("p", { className: "text-xs text-[#6E8A87] mb-4" }, "البائع: " + l.seller),
+        h("div", { className: "border-t border-dashed border-[#2E4E52] my-3" }),
+        h("div", { className: "flex items-center justify-between" },
+          h("span", { className: "mono text-xl font-semibold text-[#E8A33D]" }, fmt(l.price) + " DH"),
+          h("button", { onClick: function () { onBuy(l); }, disabled: l.seller === user, className: "bg-[#7FA66B] disabled:opacity-30 text-[#12242B] font-bold text-sm rounded-lg px-4 py-2" }, "شري")
+        )
+      );
+    })
+  );
+}
+
+function Sell(props) {
+  var onPost = props.onPost;
+  var s1 = React.useState(""); var title = s1[0], setTitle = s1[1];
+  var s2 = React.useState("product"); var type = s2[0], setType = s2[1];
+  var s3 = React.useState(""); var price = s3[0], setPrice = s3[1];
+  function submit() {
+    if (!title.trim() || !price || Number(price) <= 0) return;
+    onPost({ title: title.trim(), type: type, price: price });
+    setTitle(""); setPrice("");
+  }
+  return h("div", { className: "bg-[#1A343B] rounded-xl p-6 space-y-5" },
+    h("div", null,
+      h("label", { className: "text-sm text-[#A8BBB8] block mb-2" }, "شنو غادي تبيع؟"),
+      h("div", { className: "flex gap-2" },
+        [{ id: "product", label: "سلعة" }, { id: "service", label: "خدمة" }].map(function (o) {
+          return h("button", { key: o.id, onClick: function () { setType(o.id); }, className: "flex-1 py-2.5 rounded-lg text-sm font-semibold " + (type === o.id ? "bg-[#E8A33D] text-[#12242B]" : "bg-[#12242B] text-[#A8BBB8]") }, o.label);
+        })
+      )
+    ),
+    h("div", null,
+      h("label", { className: "text-sm text-[#A8BBB8] block mb-2" }, "العنوان"),
+      h("input", { value: title, onChange: function (e) { setTitle(e.target.value); }, placeholder: "مثلا: درس فالطبخ، ولا هاتف مستعمل", className: "w-full bg-[#12242B] border border-[#2E4E52] rounded-lg px-4 py-3 outline-none focus:border-[#E8A33D] text-right" })
+    ),
+    h("div", null,
+      h("label", { className: "text-sm text-[#A8BBB8] block mb-2" }, "الثمن (درهم)"),
+      h("input", { type: "number", value: price, onChange: function (e) { setPrice(e.target.value); }, placeholder: "0", className: "w-full mono bg-[#12242B] border border-[#2E4E52] rounded-lg px-4 py-3 outline-none focus:border-[#E8A33D] text-right" })
+    ),
+    h("button", { onClick: submit, disabled: !title.trim() || !price, className: "w-full bg-[#E8A33D] disabled:opacity-40 text-[#12242B] font-bold rounded-lg py-3 disp" }, "حط فالسوق")
+  );
+}
+
+function WalletView(props) {
+  var data = props.data, user = props.user;
+  var mine = data.transactions.filter(function (t) { return t.buyer === user || t.seller === user; });
+  return h("div", { className: "space-y-4" },
+    mine.length === 0 && h(EmptyState, { title: "مازال ماكاين حتى صفقة", body: "الصفقات ديالك غادي يبانو هنا." }),
+    mine.map(function (t) {
+      var isSeller = t.seller === user;
+      return h("div", { key: t.id, className: "ticket bg-[#1A343B] rounded-xl p-4 flex items-center justify-between" },
+        h("div", null,
+          h("p", { className: "font-semibold text-sm" }, t.title),
+          h("p", { className: "text-xs text-[#6E8A87]" }, isSeller ? ("بعتيها ل" + t.buyer) : ("شريتيها من " + t.seller))
+        ),
+        h("div", { className: "text-left" },
+          h("p", { className: "mono font-semibold " + (isSeller ? "text-[#7FA66B]" : "text-[#C1543F]") }, (isSeller ? "+" : "-") + fmt(isSeller ? t.sellerAmount : t.price) + " DH"),
+          isSeller && h("p", { className: "text-[10px] text-[#6E8A87]" }, "نسبة المنصة: " + fmt(t.commission) + " DH")
+        )
+      );
+    })
+  );
+}
+
+function Admin(props) {
+  var data = props.data, onRate = props.onRate, onReset = props.onReset;
+  var s1 = React.useState(false); var confirmReset = s1[0], setConfirmReset = s1[1];
+  return h("div", { className: "space-y-5" },
+    h("div", { className: "grid grid-cols-2 gap-4" },
+      h("div", { className: "bg-[#1A343B] rounded-xl p-5" },
+        h("p", { className: "text-xs text-[#A8BBB8] mb-1" }, "مجموع النسبة اللي خديتي"),
+        h("p", { className: "mono text-2xl font-bold text-[#E8A33D]" }, fmt(data.totalCommission) + " DH")
+      ),
+      h("div", { className: "bg-[#1A343B] rounded-xl p-5" },
+        h("p", { className: "text-xs text-[#A8BBB8] mb-1" }, "عدد الصفقات"),
+        h("p", { className: "mono text-2xl font-bold" }, data.transactions.length)
+      )
+    ),
+    h("div", { className: "bg-[#1A343B] rounded-xl p-5" },
+      h("p", { className: "text-sm text-[#A8BBB8] mb-3" }, "نسبة العمولة: ", h("b", { className: "text-[#F2E9D8]" }, Math.round(data.commissionRate * 100) + "%")),
+      h("input", { type: "range", min: "0", max: "30", value: Math.round(data.commissionRate * 100), onChange: function (e) { onRate(Number(e.target.value) / 100); }, className: "w-full accent-[#E8A33D]" })
+    ),
+    h("div", { className: "bg-[#1A343B] rounded-xl p-5" },
+      h("p", { className: "text-sm text-[#A8BBB8] mb-3" }, "آخر الصفقات"),
+      data.transactions.length === 0 && h("p", { className: "text-xs text-[#6E8A87]" }, "ماكاين حتى صفقة بعد."),
+      h("div", { className: "space-y-2 max-h-64 overflow-y-auto" },
+        data.transactions.slice(0, 20).map(function (t) {
+          return h("div", { key: t.id, className: "flex justify-between text-xs border-b border-[#2E4E52] pb-2" },
+            h("span", null, t.buyer + " ← " + t.seller + " · " + t.title),
+            h("span", { className: "mono text-[#E8A33D]" }, fmt(t.commission) + " DH")
+          );
+        })
+      )
+    ),
+    h("div", { className: "bg-[#1A343B] rounded-xl p-5 flex items-center justify-between" },
+      h("div", null,
+        h("p", { className: "text-sm font-semibold" }, "رجاع كلشي للبداية"),
+        h("p", { className: "text-xs text-[#6E8A87]" }, "كيمسح جميع البيانات.")
+      ),
+      confirmReset
+        ? h("div", { className: "flex gap-2" },
+            h("button", { onClick: function () { onReset(); setConfirmReset(false); }, className: "bg-[#C1543F] text-white text-sm font-bold rounded-lg px-3 py-2" }, "متأكد"),
+            h("button", { onClick: function () { setConfirmReset(false); }, className: "text-[#A8BBB8]" }, "إلغاء")
+          )
+        : h("button", { onClick: function () { setConfirmReset(true); }, className: "text-sm text-[#A8BBB8]" }, "بدا من جديد")
+    )
+  );
+}
+
+function EmptyState(props) {
+  return h("div", { className: "text-center py-16 text-[#6E8A87]" },
+    h("p", { className: "font-semibold text-[#A8BBB8] mb-1" }, props.title),
+    h("p", { className: "text-sm" }, props.body)
+  );
+}
+
+var fallbackEl = document.getElementById("fallback");
+if (fallbackEl) fallbackEl.remove();
+ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("sw.js").catch(function () {});
+  });
+}
+</script>
 </body>
 </html>
