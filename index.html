@@ -1,571 +1,845 @@
 <!DOCTYPE html>
-<html dir="rtl" lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>السوق</title>
-<meta name="theme-color" content="#12242B" />
-<link rel="manifest" href="manifest.json" />
-<link rel="icon" href="icon-192.png" />
-<link rel="apple-touch-icon" href="icon-192.png" />
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="config.js"></script>
-<style>
-  body { font-family: 'IBM Plex Sans Arabic', sans-serif; background:#12242B; color:#F2E9D8; margin:0; }
-  .disp { font-family: 'Cairo', sans-serif; }
-  .mono { font-family: 'IBM Plex Mono', monospace; }
-  .ticket { position: relative; }
-  .ticket::before, .ticket::after {
-    content: ""; position: absolute; width: 16px; height: 16px; border-radius: 999px;
-    background: #12242B; top: 50%; transform: translateY(-50%);
-  }
-  .ticket::before { right: -8px; }
-  .ticket::after { left: -8px; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة التواصل الاجتماعي - التطبيق الكامل</title>
+    <style>
+        /* ==========================================
+           1. RESET & GLOBAL STYLES
+           ========================================== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            color: #1c1e21;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button {
+            font-family: inherit;
+            cursor: pointer;
+            border: none;
+            outline: none;
+        }
+
+        /* ==========================================
+           2. HEADER & NAVIGATION BAR
+           ========================================== */
+        header {
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 10px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 800;
+            color: #1877f2;
+            letter-spacing: -0.5px;
+        }
+
+        .search-bar {
+            background-color: #f0f2f5;
+            border-radius: 20px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-bar input {
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 14px;
+            width: 180px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-btn {
+            background: #e4e6eb;
+            color: #050505;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        .nav-btn:hover {
+            background-color: #d8dadf;
+        }
+
+        .nav-btn:active {
+            transform: scale(0.98);
+        }
+
+        .nav-icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e4e6eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: background-color 0.2s;
+        }
+
+        .nav-icon-btn:hover {
+            background-color: #d8dadf;
+        }
+
+        /* ==========================================
+           3. MAIN LAYOUT CONTAINER
+           ========================================== */
+        .app-layout {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            max-width: 1200px;
+            width: 100%;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .sidebar-card {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #050505;
+            transition: background 0.2s;
+        }
+
+        .sidebar-menu li a:hover {
+            background-color: #f0f2f5;
+        }
+
+        /* Main Content Feed */
+        .feed-container {
+            flex: 1;
+            max-width: 650px;
+        }
+
+        /* Create Post Box */
+        .create-post-card {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .create-post-header {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .create-post-header input {
+            flex: 1;
+            background: #f0f2f5;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 18px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .create-post-actions {
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid #e4e6eb;
+            padding-top: 10px;
+        }
+
+        .create-btn {
+            background: transparent;
+            color: #65676b;
+            font-weight: 600;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 6px;
+        }
+
+        .create-btn:hover {
+            background-color: #f2f2f2;
+        }
+
+        /* ==========================================
+           4. POST CARD STYLES
+           ========================================== */
+        .post-card {
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            padding: 16px;
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background-color: #1877f2;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .avatar.green { background-color: #28a745; }
+        .avatar.purple { background-color: #6f42c1; }
+
+        .user-details h4 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #050505;
+        }
+
+        .user-details span {
+            font-size: 12px;
+            color: #65676b;
+        }
+
+        .post-settings-btn {
+            background: transparent;
+            border: none;
+            font-size: 18px;
+            color: #65676b;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .post-settings-btn:hover {
+            background-color: #f0f2f5;
+        }
+
+        .post-body {
+            font-size: 14.5px;
+            line-height: 1.6;
+            color: #050505;
+            margin-bottom: 15px;
+        }
+
+        .post-media {
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            background-color: #e4e6eb;
+            height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #65676b;
+            font-size: 14px;
+        }
+
+        /* Stats Section */
+        .post-stats {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e4e6eb;
+            font-size: 13px;
+            color: #65676b;
+        }
+
+        .stats-left, .stats-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Post Action Buttons */
+        .post-actions {
+            display: flex;
+            justify-content: space-around;
+            padding: 4px 0;
+            border-bottom: 1px solid #e4e6eb;
+        }
+
+        .action-btn {
+            background: transparent;
+            border: none;
+            padding: 8px 10px;
+            flex: 1;
+            border-radius: 6px;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #65676b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .action-btn:hover {
+            background-color: #f2f2f2;
+        }
+
+        .action-btn.liked {
+            color: #e74c3c;
+        }
+
+        .action-btn.saved {
+            color: #f39c12;
+        }
+
+        /* ==========================================
+           5. COMMENTS SECTION
+           ========================================== */
+        .comments-container {
+            margin-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .comment-input-area {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .comment-input-area input {
+            flex: 1;
+            border: 1px solid #ccd0d5;
+            background-color: #f0f2f5;
+            border-radius: 20px;
+            padding: 9px 16px;
+            font-size: 13.5px;
+            outline: none;
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+
+        .comment-input-area input:focus {
+            background-color: #ffffff;
+            border-color: #1877f2;
+        }
+
+        .send-comment-btn {
+            background-color: #1877f2;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 18px;
+            font-size: 13px;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .send-comment-btn:hover {
+            background-color: #166fe5;
+        }
+
+        .comments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .comment-item {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .comment-bubble {
+            background-color: #f0f2f5;
+            padding: 8px 14px;
+            border-radius: 16px;
+            max-width: 85%;
+        }
+
+        .comment-author-name {
+            font-size: 12.5px;
+            font-weight: bold;
+            color: #050505;
+        }
+
+        .comment-text-content {
+            font-size: 13px;
+            color: #1c1e21;
+            margin-top: 2px;
+        }
+
+        .comment-actions-meta {
+            display: flex;
+            gap: 12px;
+            margin-top: 4px;
+            margin-right: 12px;
+            font-size: 11px;
+            color: #65676b;
+        }
+
+        .comment-actions-meta span {
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .comment-actions-meta span:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 850px) {
+            .sidebar {
+                display: none;
+            }
+            .app-layout {
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 <body>
-<div id="root"></div>
-<div id="fallback" style="padding:24px;text-align:center;font-family:sans-serif;color:#F2E9D8;">
-  كيتحمل...
-</div>
 
-<script>
-window.addEventListener("error", function (e) {
-  var f = document.getElementById("fallback");
-  if (f) f.textContent = "خطأ: " + e.message;
-});
+    <!-- ==========================================
+         HEADER / NAVBAR SECTION
+         ========================================== -->
+    <header>
+        <div class="header-left">
+            <div class="logo">منصتي</div>
+            <div class="search-bar">
+                <span>🔍</span>
+                <input type="text" placeholder="بحث في المنصة...">
+            </div>
+        </div>
 
-var h = React.createElement;
-var KV_KEY = "souk-data-v1";
-var DEFAULT_BALANCE = 1000;
-var SESSION_KEY = "souk-session-v1";
+        <div class="header-right">
+            <!-- زر الملف الشخصي -->
+            <button class="nav-btn" onclick="openProfileModal()">
+                <span>👤</span>
+                <span>الملف الشخصي</span>
+            </button>
 
-function defaultData() {
-  return { listings: [], transactions: [], wallets: {}, commissionRate: 0.05, totalCommission: 0 };
-}
+            <!-- زر الإعدادات -->
+            <button class="nav-btn" onclick="openSettingsModal()">
+                <span>⚙️</span>
+                <span>الإعدادات</span>
+            </button>
 
-var CONFIG_OK = false;
-try {
-  if (window.SUPABASE_URL && window.SUPABASE_ANON_KEY && window.SUPABASE_URL.indexOf("PASTE") === -1) {
-    CONFIG_OK = true;
-  }
-} catch (e) { CONFIG_OK = false; }
+            <!-- أزرار الإشعارات والرسائل -->
+            <button class="nav-icon-btn" title="الإشعارات" onclick="alert('لا توجد إشعارات جديدة')">
+                🔔
+            </button>
+            <button class="nav-icon-btn" title="الرسائل" onclick="alert('القائمة المباشرة فارغة')">
+                💬
+            </button>
+        </div>
+    </header>
 
-function anonHeaders() {
-  return { "apikey": window.SUPABASE_ANON_KEY, "Authorization": "Bearer " + window.SUPABASE_ANON_KEY, "Content-Type": "application/json" };
-}
-function authHeaders(token) {
-  return { "apikey": window.SUPABASE_ANON_KEY, "Authorization": "Bearer " + token, "Content-Type": "application/json" };
-}
+    <!-- ==========================================
+         MAIN LAYOUT & CONTENT
+         ========================================== -->
+    <div class="app-layout">
 
-function kvGet(key) {
-  var url = window.SUPABASE_URL + "/rest/v1/kv_store?select=value&key=eq." + encodeURIComponent(key);
-  return fetch(url, { headers: anonHeaders() }).then(function (res) {
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    return res.json();
-  }).then(function (rows) { return (rows && rows.length > 0) ? rows[0].value : null; });
-}
-function kvSet(key, value) {
-  var url = window.SUPABASE_URL + "/rest/v1/kv_store";
-  var headers = anonHeaders();
-  headers["Prefer"] = "resolution=merge-duplicates";
-  return fetch(url, { method: "POST", headers: headers, body: JSON.stringify([{ key: key, value: value, updated_at: new Date().toISOString() }]) })
-    .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); });
-}
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-card">
+                <ul class="sidebar-menu">
+                    <li><a href="#">🏠 الصفحة الرئيسية</a></li>
+                    <li><a href="#" onclick="openProfileModal()">👤 الملف الشخصي</a></li>
+                    <li><a href="#" onclick="openSettingsModal()">⚙️ إعدادات الحساب</a></li>
+                    <li><a href="#">🔖 المنشورات المحفوظة</a></li>
+                    <li><a href="#">👥 المجموعات والأصدقاء</a></li>
+                </ul>
+            </div>
+        </aside>
 
-function authSignUp(email, password) {
-  var url = window.SUPABASE_URL + "/auth/v1/signup";
-  return fetch(url, { method: "POST", headers: anonHeaders(), body: JSON.stringify({ email: email, password: password }) })
-    .then(function (res) { return res.json().then(function (j) { if (!res.ok) throw new Error(j.msg || j.error_description || "فشل التسجيل"); return j; }); });
-}
-function authSignIn(email, password) {
-  var url = window.SUPABASE_URL + "/auth/v1/token?grant_type=password";
-  return fetch(url, { method: "POST", headers: anonHeaders(), body: JSON.stringify({ email: email, password: password }) })
-    .then(function (res) { return res.json().then(function (j) { if (!res.ok) throw new Error(j.msg || j.error_description || "فشل الدخول"); return j; }); });
-}
+        <!-- Feed Container -->
+        <main class="feed-container">
 
-function favGet(token) {
-  var url = window.SUPABASE_URL + "/rest/v1/favorites?select=listing_id";
-  return fetch(url, { headers: authHeaders(token) }).then(function (res) {
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    return res.json();
-  }).then(function (rows) { return rows.map(function (r) { return r.listing_id; }); });
-}
-function favAdd(token, listingId) {
-  var url = window.SUPABASE_URL + "/rest/v1/favorites";
-  var headers = authHeaders(token);
-  headers["Prefer"] = "resolution=merge-duplicates";
-  return fetch(url, { method: "POST", headers: headers, body: JSON.stringify([{ listing_id: listingId }]) })
-    .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); });
-}
-function favRemove(token, listingId) {
-  var url = window.SUPABASE_URL + "/rest/v1/favorites?listing_id=eq." + encodeURIComponent(listingId);
-  return fetch(url, { method: "DELETE", headers: authHeaders(token) })
-    .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); });
-}
+            <!-- Create Post Card -->
+            <div class="create-post-card">
+                <div class="create-post-header">
+                    <div class="avatar">أ</div>
+                    <input type="text" placeholder="بماذا تفكر اليوم؟">
+                </div>
+                <div class="create-post-actions">
+                    <button class="create-btn">📷 صورة/فيديو</button>
+                    <button class="create-btn">🏷️ إشارة لصديق</button>
+                    <button class="create-btn">😊 شعور/نشاط</button>
+                </div>
+            </div>
 
-function fmt(n) { return new Intl.NumberFormat("ar-MA", { maximumFractionDigits: 2 }).format(n || 0); }
+            <!-- POST CARD 1 -->
+            <div class="post-card" id="post-1">
+                <!-- Post Header -->
+                <div class="post-header">
+                    <div class="user-info">
+                        <div class="avatar">أ</div>
+                        <div class="user-details">
+                            <h4>أحمد المحمدي</h4>
+                            <span>منذ 3 ساعات • 🌐</span>
+                        </div>
+                    </div>
+                    <!-- زر إعدادات المنشور -->
+                    <button class="post-settings-btn" title="خيارات المنشور" onclick="togglePostMenu(1)">
+                        ⚙️
+                    </button>
+                </div>
 
-function StarMark(props) {
-  var size = props.size || 28;
-  var className = props.className || "";
-  return h("svg", { width: size, height: size, viewBox: "0 0 100 100", className: className },
-    h("g", { fill: "currentColor" },
-      h("path", { d: "M50 2 L61 39 L98 50 L61 61 L50 98 L39 61 L2 50 L39 39 Z" }),
-      h("path", { d: "M50 20 L57 43 L80 50 L57 57 L50 80 L43 57 L20 50 L43 43 Z", fill: "none", stroke: "currentColor", strokeWidth: "1.5", opacity: "0.5" })
-    )
-  );
-}
+                <!-- Post Content -->
+                <div class="post-body">
+                    مرحباً بكم في التحديث الجديد للمنصة! تم إضافة زر الإعدادات وزر الملف الشخصي، مع إمكانية حفظ المنشورات والإعجاب بها وكتابة التعليقات بشكل كامل.
+                </div>
 
-function HeartIcon(props) {
-  var filled = props.filled;
-  return h("svg", { width: 18, height: 18, viewBox: "0 0 24 24", fill: filled ? "#E8A33D" : "none", stroke: filled ? "#E8A33D" : "currentColor", strokeWidth: "2" },
-    h("path", { d: "M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" })
-  );
-}
+                <!-- Post Media Placeholder -->
+                <div class="post-media">
+                    🖼️ معاينة الصورة أو الوسائط المرفقة
+                </div>
 
-function ConfigMissing() {
-  return h("div", { className: "min-h-screen flex items-center justify-center px-6 text-center" },
-    h("div", { className: "max-w-md" },
-      h("div", { className: "text-[#E8A33D] flex justify-center mb-4" }, h(StarMark, { size: 40 })),
-      h("h1", { className: "disp text-2xl font-bold mb-3" }, "خاصك تعمر config.js"),
-      h("p", { className: "text-[#A8BBB8] leading-relaxed" },
-        "حط SUPABASE_URL و SUPABASE_ANON_KEY ديالك فملف ",
-        h("code", { className: "bg-[#1A343B] px-1 rounded" }, "config.js")
-      )
-    )
-  );
-}
+                <!-- Post Stats -->
+                <div class="post-stats">
+                    <div class="stats-left">
+                        <span id="like-count-1">❤️ 24 إعجاب</span>
+                    </div>
+                    <div class="stats-right">
+                        <span id="comment-count-1">💬 2 تعليقات</span>
+                        <span>🔖 5 مرات حفظ</span>
+                    </div>
+                </div>
 
-function useSession() {
-  var R = React;
-  var s1 = R.useState(null); var session = s1[0], setSession = s1[1];
-  var s2 = R.useState(true); var checking = s2[0], setChecking = s2[1];
+                <!-- Post Action Buttons -->
+                <div class="post-actions">
+                    <!-- زر الإعجاب -->
+                    <button class="action-btn" id="like-btn-1" onclick="handleLike(1)">
+                        ❤️ <span>إعجاب</span>
+                    </button>
 
-  R.useEffect(function () {
-    try {
-      var raw = window.localStorage.getItem(SESSION_KEY);
-      if (raw) setSession(JSON.parse(raw));
-    } catch (e) {}
-    setChecking(false);
-  }, []);
+                    <!-- زر حفظ المنشور -->
+                    <button class="action-btn" id="save-btn-1" onclick="handleSave(1)">
+                        🔖 <span>حفظ المنشور</span>
+                    </button>
 
-  function login(sessionObj) {
-    setSession(sessionObj);
-    try { window.localStorage.setItem(SESSION_KEY, JSON.stringify(sessionObj)); } catch (e) {}
-  }
-  function logout() {
-    setSession(null);
-    try { window.localStorage.removeItem(SESSION_KEY); } catch (e) {}
-  }
-  return { session: session, checking: checking, login: login, logout: logout };
-}
+                    <!-- زر التعليق -->
+                    <button class="action-btn" onclick="focusCommentInput(1)">
+                        💬 <span>تعليق</span>
+                    </button>
 
-function useSouk() {
-  var R = React;
-  var state = R.useState(null); var data = state[0], setData = state[1];
-  var s2 = R.useState(true); var loading = s2[0], setLoading = s2[1];
-  var s3 = R.useState(false); var saving = s3[0], setSaving = s3[1];
-  var s4 = R.useState(""); var error = s4[0], setError = s4[1];
-  var s5 = R.useState(null); var toast = s5[0], setToast = s5[1];
+                    <!-- زر المشاركة -->
+                    <button class="action-btn" onclick="handleShare(1)">
+                        ↗️ <span>مشاركة</span>
+                    </button>
+                </div>
 
-  function showToast(msg, kind) {
-    setToast({ msg: msg, kind: kind || "ok" });
-    setTimeout(function () { setToast(null); }, 2600);
-  }
+                <!-- Comments Section -->
+                <div class="comments-container">
+                    <div class="comment-input-area">
+                        <div class="avatar" style="width: 32px; height: 32px; font-size: 12px;">أ</div>
+                        <input type="text" id="comment-input-1" placeholder="اكتب تعليقاً واسحب للأسفل...">
+                        <button class="send-comment-btn" onclick="submitComment(1)">إرسال</button>
+                    </div>
 
-  var load = R.useCallback(function () {
-    setLoading(true); setError("");
-    kvGet(KV_KEY).then(function (val) {
-      if (val) { setData(val); return null; }
-      var fresh = defaultData();
-      return kvSet(KV_KEY, fresh).then(function () { setData(fresh); });
-    }).catch(function () {
-      setError("ما قدرتش نجيب المعطيات.");
-    }).finally(function () { setLoading(false); });
-  }, []);
+                    <div class="comments-list" id="comments-list-1">
+                        <!-- Comment 1 -->
+                        <div class="comment-item">
+                            <div class="avatar green" style="width: 32px; height: 32px; font-size: 12px;">س</div>
+                            <div>
+                                <div class="comment-bubble">
+                                    <div class="comment-author-name">سارة الإبراهيمي</div>
+                                    <div class="comment-text-content">تصميم ممتاز وتطبيق سلس جداً! بالتوفيق.</div>
+                                </div>
+                                <div class="comment-actions-meta">
+                                    <span>إعجاب</span>
+                                    <span>رد</span>
+                                    <span>منذ ساعتين</span>
+                                </div>
+                            </div>
+                        </div>
 
-  R.useEffect(function () { load(); }, [load]);
+                        <!-- Comment 2 -->
+                        <div class="comment-item">
+                            <div class="avatar purple" style="width: 32px; height: 32px; font-size: 12px;">م</div>
+                            <div>
+                                <div class="comment-bubble">
+                                    <div class="comment-author-name">محمد العلي</div>
+                                    <div class="comment-text-content">عمل رائع! كود كامل وواضح.</div>
+                                </div>
+                                <div class="comment-actions-meta">
+                                    <span>إعجاب</span>
+                                    <span>رد</span>
+                                    <span>منذ ساعة</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-  function persist(next) {
-    setSaving(true);
-    return kvSet(KV_KEY, next).then(function () { setData(next); })
-      .catch(function () { showToast("خطأ: ما تسجلاتش التغييرات ديالك", "err"); })
-      .finally(function () { setSaving(false); });
-  }
+            <!-- POST CARD 2 -->
+            <div class="post-card" id="post-2">
+                <div class="post-header">
+                    <div class="user-info">
+                        <div class="avatar green">ك</div>
+                        <div class="user-details">
+                            <h4>كريم العلمي</h4>
+                            <span>منذ 5 ساعات • 🌐</span>
+                        </div>
+                    </div>
+                    <button class="post-settings-btn" title="خيارات المنشور" onclick="togglePostMenu(2)">
+                        ⚙️
+                    </button>
+                </div>
 
-  return { data: data, loading: loading, saving: saving, error: error, toast: toast, load: load, persist: persist, showToast: showToast };
-}
+                <div class="post-body">
+                    هل جربتم إضافة زر حفظ المنشور ومتابعة التفاعلات بشكل مباشر؟ المنصات التفاعلية تجعل تجربة المستخدم أفضل بكثير.
+                </div>
 
-function App() {
-  var sess = useSession();
-  var souk = useSouk();
-  var data = souk.data, loading = souk.loading, saving = souk.saving, error = souk.error, toast = souk.toast, load = souk.load, persist = souk.persist, showToast = souk.showToast;
+                <div class="post-stats">
+                    <div class="stats-left">
+                        <span id="like-count-2">❤️ 12 إعجاب</span>
+                    </div>
+                    <div class="stats-right">
+                        <span id="comment-count-2">💬 0 تعليقات</span>
+                        <span>🔖 1 حفظ</span>
+                    </div>
+                </div>
 
-  var s3 = React.useState("browse"); var tab = s3[0], setTab = s3[1];
-  var s4 = React.useState([]); var favorites = s4[0], setFavorites = s4[1];
+                <div class="post-actions">
+                    <button class="action-btn" id="like-btn-2" onclick="handleLike(2)">
+                        ❤️ <span>إعجاب</span>
+                    </button>
+                    <button class="action-btn" id="save-btn-2" onclick="handleSave(2)">
+                        🔖 <span>حفظ المنشور</span>
+                    </button>
+                    <button class="action-btn" onclick="focusCommentInput(2)">
+                        💬 <span>تعليق</span>
+                    </button>
+                    <button class="action-btn" onclick="handleShare(2)">
+                        ↗️ <span>مشاركة</span>
+                    </button>
+                </div>
 
-  React.useEffect(function () {
-    if (sess.session && sess.session.access_token) {
-      favGet(sess.session.access_token).then(setFavorites).catch(function () {});
-    } else {
-      setFavorites([]);
-    }
-  }, [sess.session]);
+                <div class="comments-container">
+                    <div class="comment-input-area">
+                        <div class="avatar" style="width: 32px; height: 32px; font-size: 12px;">أ</div>
+                        <input type="text" id="comment-input-2" placeholder="اكتب تعليقاً...">
+                        <button class="send-comment-btn" onclick="submitComment(2)">إرسال</button>
+                    </div>
 
-  function toggleFavorite(listingId) {
-    if (!sess.session) return;
-    var token = sess.session.access_token;
-    if (favorites.indexOf(listingId) >= 0) {
-      favRemove(token, listingId).then(function () {
-        setFavorites(favorites.filter(function (id) { return id !== listingId; }));
-      }).catch(function () { showToast("ما قدرتش نبدل الحفظ", "err"); });
-    } else {
-      favAdd(token, listingId).then(function () {
-        setFavorites(favorites.concat([listingId]));
-      }).catch(function () { showToast("ما قدرتش نبدل الحفظ", "err"); });
-    }
-  }
+                    <div class="comments-list" id="comments-list-2">
+                        <!-- No comments initial state -->
+                    </div>
+                </div>
+            </div>
 
-  var user = sess.session ? sess.session.user.email : null;
+        </main>
+    </div>
 
-  function postListing(payload) {
-    var listing = { id: crypto.randomUUID(), title: payload.title, type: payload.type, price: Number(payload.price), seller: user, createdAt: Date.now(), sold: false };
-    var next = Object.assign({}, data, { listings: [listing].concat(data.listings) });
-    persist(next).then(function () { showToast("تسجل السلعة/الخدمة ديالك فالسوق"); setTab("browse"); });
-  }
+    <!-- ==========================================
+         JAVASCRIPT LOGIC
+         ========================================== -->
+    <script>
+        // State management object
+        const postState = {
+            1: { liked: false, likes: 24, saved: false, commentsCount: 2 },
+            2: { liked: false, likes: 12, saved: false, commentsCount: 0 }
+        };
 
-  function buyListing(listing) {
-    if (listing.seller === user) { showToast("ما يمكنش تشري شي حاجة ديالك نتا", "err"); return; }
-    if (!(user in data.wallets)) {
-      var w = Object.assign({}, data.wallets); w[user] = DEFAULT_BALANCE;
-      data = Object.assign({}, data, { wallets: w });
-    }
-    var buyerBalance = data.wallets[user] !== undefined ? data.wallets[user] : DEFAULT_BALANCE;
-    if (buyerBalance < listing.price) { showToast("الرصيد ديالك ما كافيش", "err"); return; }
-    var commission = Math.round(listing.price * data.commissionRate * 100) / 100;
-    var sellerAmount = Math.round((listing.price - commission) * 100) / 100;
-    var tx = { id: crypto.randomUUID(), listingId: listing.id, title: listing.title, buyer: user, seller: listing.seller, price: listing.price, commission: commission, sellerAmount: sellerAmount, at: Date.now() };
-    var wallets = Object.assign({}, data.wallets);
-    wallets[user] = Math.round((buyerBalance - listing.price) * 100) / 100;
-    wallets[listing.seller] = Math.round(((wallets[listing.seller] !== undefined ? wallets[listing.seller] : DEFAULT_BALANCE) + sellerAmount) * 100) / 100;
-    var next = Object.assign({}, data, {
-      listings: data.listings.map(function (l) { return l.id === listing.id ? Object.assign({}, l, { sold: true }) : l; }),
-      transactions: [tx].concat(data.transactions),
-      wallets: wallets,
-      totalCommission: Math.round((data.totalCommission + commission) * 100) / 100
-    });
-    persist(next).then(function () { showToast("صفقة تمت! اقتطاع عمولة " + fmt(commission) + " درهم"); });
-  }
+        // 1. Toggle Like Button Functionality
+        function handleLike(postId) {
+            const state = postState[postId];
+            const btn = document.getElementById(`like-btn-${postId}`);
+            const countSpan = document.getElementById(`like-count-${postId}`);
 
-  function updateRate(rate) { persist(Object.assign({}, data, { commissionRate: rate })); }
-  function resetDemo() { persist(defaultData()).then(function () { showToast("رجعو المعطيات للبداية"); }); }
+            if (!state.liked) {
+                state.liked = true;
+                state.likes += 1;
+                btn.classList.add('liked');
+                btn.querySelector('span').innerText = 'تم الإعجاب';
+            } else {
+                state.liked = false;
+                state.likes -= 1;
+                btn.classList.remove('liked');
+                btn.querySelector('span').innerText = 'إعجاب';
+            }
 
-  if (!CONFIG_OK) return h(ConfigMissing);
-  if (sess.checking || loading) return h("div", { className: "min-h-screen flex items-center justify-center text-[#E8A33D]" }, "كيتحمل...");
+            countSpan.innerText = `❤️ ${state.likes} إعجاب`;
+        }
 
-  var balance = user ? (data.wallets[user] !== undefined ? data.wallets[user] : DEFAULT_BALANCE) : 0;
+        // 2. Toggle Save Post Functionality
+        function handleSave(postId) {
+            const state = postState[postId];
+            const btn = document.getElementById(`save-btn-${postId}`);
 
-  return h("div", null,
-    error && h("div", { className: "bg-[#C1543F] text-white text-sm text-center py-2 px-4 flex items-center justify-center gap-3" },
-      error, h("button", { onClick: load, className: "underline" }, "عاود جرب")
-    ),
-    toast && h("div", { className: "fixed top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-lg text-sm shadow-lg " + (toast.kind === "err" ? "bg-[#C1543F]" : "bg-[#7FA66B]") + " text-[#12242B] font-semibold" }, toast.msg),
-    !sess.session
-      ? h(AuthScreen, { onLogin: sess.login, showToast: showToast })
-      : h(MarketApp, {
-          data: data, user: user, balance: balance, tab: tab, setTab: setTab, saving: saving,
-          favorites: favorites, onToggleFavorite: toggleFavorite,
-          onPost: postListing, onBuy: buyListing, onRate: updateRate, onReset: resetDemo,
-          onLogout: sess.logout
-        })
-  );
-}
+            if (!state.saved) {
+                state.saved = true;
+                btn.classList.add('saved');
+                btn.querySelector('span').innerText = 'تم الحفظ';
+                alert('تم حفظ المنشور بنجاح في قائمتك!');
+            } else {
+                state.saved = false;
+                btn.classList.remove('saved');
+                btn.querySelector('span').innerText = 'حفظ المنشور';
+            }
+        }
 
-function AuthScreen(props) {
-  var onLogin = props.onLogin, showToast = props.showToast;
-  var s1 = React.useState("login"); var mode = s1[0], setMode = s1[1];
-  var s2 = React.useState(""); var email = s2[0], setEmail = s2[1];
-  var s3 = React.useState(""); var password = s3[0], setPassword = s3[1];
-  var s4 = React.useState(false); var loading = s4[0], setLoading = s4[1];
+        // 3. Focus Comment Input
+        function focusCommentInput(postId) {
+            const inputField = document.getElementById(`comment-input-${postId}`);
+            if (inputField) {
+                inputField.focus();
+            }
+        }
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    if (!email || !password) { showToast("عمر الجيميل والساروت", "err"); return; }
-    setLoading(true);
-    var action = mode === "login" ? authSignIn : authSignUp;
-    action(email, password).then(function (res) {
-      if (res.access_token) {
-        onLogin(res);
-        showToast(mode === "login" ? "مرحبا بك فالسوق!" : "تم إنشاء الحساب بنجاح");
-      } else {
-        showToast("تأكد من البريد الإلكتروني لتفعيل الحساب", "ok");
-      }
-    }).catch(function (err) {
-      showToast(err.message || "حدث خطأ فالتسجيل", "err");
-    }).finally(function () { setLoading(false); });
-  }
+        // 4. Submit New Comment Dynamically
+        function submitComment(postId) {
+            const inputField = document.getElementById(`comment-input-${postId}`);
+            const text = inputField.value.trim();
 
-  return h("div", { className: "min-h-screen flex items-center justify-center p-4 bg-[#12242B]" },
-    h("div", { className: "bg-[#1A343B] p-6 rounded-2xl w-full max-w-sm border border-[#25464F] shadow-2xl" },
-      h("div", { className: "text-[#E8A33D] flex justify-center mb-3" }, h(StarMark, { size: 52 })),
-      h("h2", { className: "disp text-2xl font-bold text-center mb-1 text-[#F2E9D8]" }, "تطبيق السوق"),
-      h("p", { className: "text-xs text-[#A8BBB8] text-center mb-6" }, mode === "login" ? "دخل بحسابك باش تبدا البيع والشراء" : "أنشئ حساب جديد للبدء"),
-      h("form", { onSubmit: handleSubmit, className: "space-y-4" },
-        h("div", null,
-          h("label", { className: "block text-xs text-[#A8BBB8] mb-1 font-semibold" }, "البريد الإلكتروني"),
-          h("input", {
-            type: "email", value: email, onChange: function (e) { setEmail(e.target.value); },
-            placeholder: "example@domain.com",
-            className: "w-full bg-[#12242B] border border-[#25464F] rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#E8A33D] transition"
-          })
-        ),
-        h("div", null,
-          h("label", { className: "block text-xs text-[#A8BBB8] mb-1 font-semibold" }, "كلمة السر"),
-          h("input", {
-            type: "password", value: password, onChange: function (e) { setPassword(e.target.value); },
-            placeholder: "••••••••",
-            className: "w-full bg-[#12242B] border border-[#25464F] rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#E8A33D] transition"
-          })
-        ),
-        h("button", {
-          type: "submit", disabled: loading,
-          className: "w-full bg-[#E8A33D] text-[#12242B] font-bold p-3.5 rounded-xl hover:bg-[#d49232] active:scale-95 transition disabled:opacity-50 mt-2 shadow-md"
-        }, loading ? "انتظر لحظة..." : (mode === "login" ? "تسجيل الدخول" : "إنشاء حساب"))
-      ),
-      h("div", { className: "mt-6 text-center border-t border-[#25464F] pt-4" },
-        h("button", {
-          onClick: function () { setMode(mode === "login" ? "signup" : "login"); },
-          className: "text-xs text-[#A8BBB8] hover:text-[#E8A33D] transition underline"
-        }, mode === "login" ? "ما عندكش حساب؟ سجل حساب جديد" : "عندك حساب؟ تسجيل الدخول")
-      )
-    )
-  );
-}
+            if (text === "") {
+                alert("يرجى كتابة نص التعليق أولاً!");
+                return;
+            }
 
-function MarketApp(props) {
-  var data = props.data, user = props.user, balance = props.balance, tab = props.tab, setTab = props.setTab, saving = props.saving;
-  var favorites = props.favorites, onToggleFavorite = props.onToggleFavorite, onPost = props.onPost, onBuy = props.onBuy, onRate = props.onRate, onReset = props.onReset, onLogout = props.onLogout;
+            const commentsList = document.getElementById(`comments-list-${postId}`);
+            const newCommentItem = document.createElement('div');
+            newCommentItem.className = 'comment-item';
 
-  return h("div", { className: "pb-24 max-w-md mx-auto min-h-screen border-x border-[#1A343B] relative" },
-    h("header", { className: "p-4 bg-[#1A343B] flex justify-between items-center sticky top-0 z-40 border-b border-[#25464F] shadow-sm" },
-      h("div", { className: "flex items-center gap-2" },
-        h(StarMark, { size: 26, className: "text-[#E8A33D]" }),
-        h("span", { className: "disp font-bold text-xl text-[#F2E9D8]" }, "السوق")
-      ),
-      h("div", { className: "flex items-center gap-3" },
-        h("div", { className: "mono text-xs font-bold bg-[#12242B] px-3 py-1.5 rounded-full border border-[#25464F] text-[#E8A33D]" }, fmt(balance) + " د.م"),
-        h("button", { onClick: onLogout, className: "text-xs font-semibold bg-[#C1543F]/15 text-[#C1543F] border border-[#C1543F]/30 px-2.5 py-1 rounded-lg hover:bg-[#C1543F]/30 transition" }, "خروج")
-      )
-    ),
-    h("main", { className: "p-4" },
-      tab === "browse" && h(BrowseTab, { listings: data.listings, user: user, favorites: favorites, onToggleFavorite: onToggleFavorite, onBuy: onBuy, saving: saving }),
-      tab === "post" && h(PostTab, { onPost: onPost, saving: saving }),
-      tab === "wallet" && h(WalletTab, { balance: balance, transactions: data.transactions, user: user }),
-      tab === "admin" && h(AdminTab, { data: data, onRate: onRate, onReset: onReset })
-    ),
-    h("nav", { className: "fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#1A343B] border-t border-[#25464F] flex justify-around p-3 z-40 backdrop-blur-md" },
-      h("button", { onClick: function () { setTab("browse"); }, className: "flex flex-col items-center gap-1 text-xs font-semibold transition " + (tab === "browse" ? "text-[#E8A33D]" : "text-[#A8BBB8]") },
-        h("span", { className: "text-base" }, "🛒"), "السوق"
-      ),
-      h("button", { onClick: function () { setTab("post"); }, className: "flex flex-col items-center gap-1 text-xs font-semibold transition " + (tab === "post" ? "text-[#E8A33D]" : "text-[#A8BBB8]") },
-        h("span", { className: "text-base" }, "➕"), "إضافة"
-      ),
-      h("button", { onClick: function () { setTab("wallet"); }, className: "flex flex-col items-center gap-1 text-xs font-semibold transition " + (tab === "wallet" ? "text-[#E8A33D]" : "text-[#A8BBB8]") },
-        h("span", { className: "text-base" }, "💳"), "المحفظة"
-      ),
-      h("button", { onClick: function () { setTab("admin"); }, className: "flex flex-col items-center gap-1 text-xs font-semibold transition " + (tab === "admin" ? "text-[#E8A33D]" : "text-[#A8BBB8]") },
-        h("span", { className: "text-base" }, "⚙️"), "الإدارة"
-      )
-    )
-  );
-}
+            newCommentItem.innerHTML = `
+                <div class="avatar" style="width: 32px; height: 32px; font-size: 12px;">أ</div>
+                <div>
+                    <div class="comment-bubble">
+                        <div class="comment-author-name">أنت (الملف الشخصي)</div>
+                        <div class="comment-text-content">${escapeHTML(text)}</div>
+                    </div>
+                    <div class="comment-actions-meta">
+                        <span>إعجاب</span>
+                        <span>رد</span>
+                        <span>الآن</span>
+                    </div>
+                </div>
+            `;
 
-function BrowseTab(props) {
-  var listings = props.listings, user = props.user, favorites = props.favorites, onToggleFavorite = props.onToggleFavorite, onBuy = props.onBuy, saving = props.saving;
-  var s1 = React.useState(""); var query = s1[0], setQuery = s1[1];
-  var s2 = React.useState("all"); var filter = s2[0], setFilter = s2[1];
+            commentsList.appendChild(newCommentItem);
+            inputField.value = "";
 
-  var filtered = listings.filter(function (l) {
-    var matchQuery = l.title.toLowerCase().indexOf(query.toLowerCase()) >= 0;
-    var matchType = filter === "all" ? true : (filter === "fav" ? favorites.indexOf(l.id) >= 0 : l.type === filter);
-    return matchQuery && matchType;
-  });
+            // Update comment count stats
+            postState[postId].commentsCount += 1;
+            const commentCountSpan = document.getElementById(`comment-count-${postId}`);
+            if (commentCountSpan) {
+                commentCountSpan.innerText = `💬 ${postState[postId].commentsCount} تعليقات`;
+            }
+        }
 
-  return h("div", { className: "space-y-4" },
-    h("div", { className: "relative" },
-      h("input", {
-        type: "text", placeholder: "بحث فالسوق ع السلعة أو الخدمة...", value: query,
-        onChange: function (e) { setQuery(e.target.value); },
-        className: "w-full bg-[#1A343B] border border-[#25464F] rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#E8A33D] placeholder-[#A8BBB8]/60 transition"
-      })
-    ),
-    h("div", { className: "flex gap-2 overflow-x-auto pb-1" },
-      [
-        { id: "all", label: "الكل" },
-        { id: "سلعة", label: "السلع" },
-        { id: "خدمة", label: "الخدمات" },
-        { id: "fav", label: "المفضلة ⭐" }
-      ].map(function (cat) {
-        return h("button", {
-          key: cat.id, onClick: function () { setFilter(cat.id); },
-          className: "px-3.5 py-1.5 rounded-lg text-xs font-semibold transition whitespace-nowrap " + (filter === cat.id ? "bg-[#E8A33D] text-[#12242B]" : "bg-[#1A343B] text-[#A8BBB8] border border-[#25464F]")
-        }, cat.label);
-      })
-    ),
-    filtered.length === 0
-      ? h("div", { className: "text-center py-12 text-[#A8BBB8] text-sm bg-[#1A343B]/40 rounded-xl border border-[#25464F]/50" }, "ما كاين حتى منتج كيطابق البحث ديالك.")
-      : h("div", { className: "space-y-3" },
-          filtered.map(function (item) {
-            var isFav = favorites.indexOf(item.id) >= 0;
-            var isOwner = item.seller === user;
-            return h("div", { key: item.id, className: "bg-[#1A343B] p-4 rounded-xl border border-[#25464F] flex justify-between items-center hover:border-[#E8A33D]/50 transition" },
-              h("div", { className: "space-y-1.5" },
-                h("div", { className: "flex items-center gap-2" },
-                  h("span", { className: "text-[10px] font-bold px-2 py-0.5 rounded bg-[#12242B] text-[#E8A33D] border border-[#25464F]" }, item.type),
-                  h("h3", { className: "font-bold text-sm text-[#F2E9D8]" }, item.title)
-                ),
-                h("p", { className: "text-[11px] text-[#A8BBB8]" }, "البائع: " + (isOwner ? "أنت" : item.seller)),
-                h("div", { className: "mono font-bold text-sm text-[#E8A33D]" }, fmt(item.price) + " د.م")
-              ),
-              h("div", { className: "flex items-center gap-2.5" },
-                h("button", { onClick: function () { onToggleFavorite(item.id); }, className: "p-2 rounded-lg bg-[#12242B] border border-[#25464F] hover:bg-[#12242B]/80 transition" },
-                  h(HeartIcon, { filled: isFav })
-                ),
-                item.sold
-                  ? h("span", { className: "text-xs font-bold text-[#C1543F] bg-[#C1543F]/10 border border-[#C1543F]/40 px-3 py-1.5 rounded-lg" }, "تم البيع")
-                  : h("button", {
-                      onClick: function () { onBuy(item); }, disabled: isOwner || saving,
-                      className: "px-4 py-2 bg-[#E8A33D] text-[#12242B] font-bold text-xs rounded-lg hover:bg-[#d49232] transition disabled:opacity-40 disabled:cursor-not-allowed"
-                    }, isOwner ? "سلعتك" : "شراء")
-              )
+        // 5. Utility: Share Handler
+        function handleShare(postId) {
+            alert(`تم نسخ رابط المنشور رقم #${postId} للحافظة!`);
+        }
+
+        // 6. Utility: Settings Modals / Navigation Handlers
+        function openSettingsModal() {
+            alert("⚙️ قائمة الإعدادات:\n- إعدادات الحساب\n- الخصوصية والأمان\n- التنبيهات\n- المظهر (الوضع الليلي)");
+        }
+
+        function openProfileModal() {
+            alert("👤 صفحة الملف الشخصي:\nالاسم: أحمد المحمدي\nالبريد: ahmed@example.com\nالمنشورات: 12\nالمتابعون: 340");
+        }
+
+        function togglePostMenu(postId) {
+            alert(`⚙️ إعدادات المنشور رقم #${postId}:\n- تعديل المنشور\n- إخفاء المنشور\n- حظر المستخدم\n- الإبلاغ عن المحتوى`);
+        }
+
+        // Helper to prevent XSS attacks in input fields
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag] || tag)
             );
-          })
-        )
-  );
-}
-
-function PostTab(props) {
-  var onPost = props.onPost, saving = props.saving;
-  var s1 = React.useState(""); var title = s1[0], setTitle = s1[1];
-  var s2 = React.useState("سلعة"); var type = s2[0], setType = s2[1];
-  var s3 = React.useState(""); var price = s3[0], setPrice = s3[1];
-
-  function handleSubmit(e) {
-    e.preventDefault();
-    if (!title || !price || Number(price) <= 0) return;
-    onPost({ title: title, type: type, price: price });
-  }
-
-  return h("form", { onSubmit: handleSubmit, className: "space-y-4 bg-[#1A343B] p-5 rounded-2xl border border-[#25464F] shadow-lg" },
-    h("h2", { className: "disp font-bold text-lg mb-2 text-[#F2E9D8]" }, "إضافة عرض جديد"),
-    h("div", null,
-      h("label", { className: "block text-xs text-[#A8BBB8] mb-1 font-semibold" }, "اسم السلعة أو الخدمة"),
-      h("input", {
-        type: "text", value: title, onChange: function (e) { setTitle(e.target.value); },
-        placeholder: "مثال: هاتف آيفون مستعمل، خدمة تصميم...",
-        className: "w-full bg-[#12242B] border border-[#25464F] rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#E8A33D] transition"
-      })
-    ),
-    h("div", null,
-      h("label", { className: "block text-xs text-[#A8BBB8] mb-1 font-semibold" }, "النوع"),
-      h("select", {
-        value: type, onChange: function (e) { setType(e.target.value); },
-        className: "w-full bg-[#12242B] border border-[#25464F] rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#E8A33D] transition"
-      },
-        h("option", { value: "سلعة" }, "سلعة (منتج مادي)"),
-        h("option", { value: "خدمة" }, "خدمة (عمل مصمم/مطور...)")
-      )
-    ),
-    h("div", null,
-      h("label", { className: "block text-xs text-[#A8BBB8] mb-1 font-semibold" }, "الثمن بالدرهم (MAD)"),
-      h("input", {
-        type: "number", min: "1", value: price, onChange: function (e) { setPrice(e.target.value); },
-        placeholder: "0.00",
-        className: "w-full bg-[#12242B] border border-[#25464F] rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#E8A33D] transition"
-      })
-    ),
-    h("button", {
-      type: "submit", disabled: saving || !title || !price,
-      className: "w-full bg-[#E8A33D] text-[#12242B] font-bold p-3.5 rounded-xl hover:bg-[#d49232] transition disabled:opacity-50 mt-2"
-    }, saving ? "جاري الحفظ..." : "نشر فالسوق")
-  );
-}
-
-function WalletTab(props) {
-  var balance = props.balance, transactions = props.transactions, user = props.user;
-  var myTx = transactions.filter(function (t) { return t.buyer === user || t.seller === user; });
-
-  return h("div", { className: "space-y-4" },
-    h("div", { className: "bg-[#1A343B] p-6 rounded-2xl border border-[#25464F] text-center ticket shadow-lg" },
-      h("p", { className: "text-xs text-[#A8BBB8] mb-1 font-semibold" }, "رصيدك الحالي فالمحفظة"),
-      h("div", { className: "disp text-3xl font-bold text-[#E8A33D] my-1" }, fmt(balance) + " د.م"),
-      h("p", { className: "text-[10px] text-[#A8BBB8]" }, "رصيد افتراضي للتجربة فالسوق")
-    ),
-    h("h3", { className: "disp font-bold text-base mt-4 text-[#F2E9D8]" }, "سجل الصفقات ديالك"),
-    myTx.length === 0
-      ? h("div", { className: "text-center py-8 text-[#A8BBB8] text-xs bg-[#1A343B]/30 rounded-xl border border-[#25464F]/40" }, "ما درتي حتى معاملة لحد الساعة.")
-      : h("div", { className: "space-y-2.5" },
-          myTx.map(function (tx) {
-            var isBuyer = tx.buyer === user;
-            return h("div", { key: tx.id, className: "bg-[#1A343B] p-3.5 rounded-xl border border-[#25464F] flex justify-between items-center text-xs" },
-              h("div", { className: "space-y-0.5" },
-                h("p", { className: "font-bold text-[#F2E9D8]" }, tx.title),
-                h("p", { className: "text-[11px] text-[#A8BBB8]" }, isBuyer ? "شريتي من: " + tx.seller : "بعتي لـ: " + tx.buyer),
-                h("p", { className: "text-[9px] text-[#A8BBB8]/60" }, new Date(tx.at).toLocaleString("ar-MA"))
-              ),
-              h("div", { className: "text-left" },
-                h("div", { className: "mono font-bold text-sm " + (isBuyer ? "text-[#C1543F]" : "text-[#7FA66B]") },
-                  (isBuyer ? "-" : "+") + fmt(isBuyer ? tx.price : tx.sellerAmount) + " د.م"
-                ),
-                !isBuyer && h("p", { className: "text-[9px] text-[#A8BBB8]" }, "عمولة: " + fmt(tx.commission) + " د.م")
-              )
-            );
-          })
-        )
-  );
-}
-
-function AdminTab(props) {
-  var data = props.data, onRate = props.onRate, onReset = props.onReset;
-  var rate = (data.commissionRate * 100).toFixed(0);
-
-  return h("div", { className: "space-y-5 bg-[#1A343B] p-5 rounded-2xl border border-[#25464F] shadow-lg" },
-    h("h2", { className: "disp font-bold text-lg mb-2 text-[#F2E9D8]" }, "لوحة تحكم المنصة (Admin)"),
-    h("div", { className: "p-4 bg-[#12242B] rounded-xl border border-[#25464F]" },
-      h("p", { className: "text-xs text-[#A8BBB8] mb-1" }, "مجموع عمولات المنصة المجمعة"),
-      h("p", { className: "disp text-2xl font-bold text-[#7FA66B]" }, fmt(data.totalCommission) + " د.م"),
-      h("p", { className: "text-[10px] text-[#A8BBB8] mt-1" }, "إجمالي الأرباح المستخلصة من المبيعات")
-    ),
-    h("div", { className: "space-y-2" },
-      h("div", { className: "flex justify-between items-center text-xs text-[#A8BBB8]" },
-        h("span", { className: "font-semibold" }, "نسبة اقتطاع العمولة:"),
-        h("span", { className: "mono font-bold text-[#E8A33D] text-sm" }, rate + "%")
-      ),
-      h("input", {
-        type: "range", min: "0", max: "20", value: rate,
-        onChange: function (e) { onRate(Number(e.target.value) / 100); },
-        className: "w-full accent-[#E8A33D] cursor-pointer"
-      })
-    ),
-    h("div", { className: "pt-4 border-t border-[#25464F]" },
-      h("button", {
-        onClick: onReset,
-        className: "w-full bg-[#C1543F]/15 text-[#C1543F] border border-[#C1543F]/30 font-bold p-3 rounded-xl hover:bg-[#C1543F]/30 transition text-xs"
-      }, "إعادة ضبط المعطيات للبداية (Reset All Demo Data)")
-    )
-  );
-}
-
-var container = document.getElementById("root");
-var root = ReactDOM.createRoot(container);
-root.render(h(App));
-
-var fallbackEl = document.getElementById("fallback");
-if (fallbackEl) fallbackEl.remove();
-</script>
+        }
+    </script>
 </body>
 </html>
