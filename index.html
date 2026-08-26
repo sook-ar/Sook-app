@@ -3,364 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة التواصل الاجتماعي - التطبيق الكامل</title>
+    <title>تطبيق البيع والشراء</title>
     <style>
-        /* ==========================================
-           1. RESET & GLOBAL STYLES
-           ========================================== */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
         }
 
         body {
-            background-color: #f0f2f5;
-            color: #1c1e21;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+            background-color: #f4f6f8;
+            color: #333;
         }
 
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        button {
-            font-family: inherit;
-            cursor: pointer;
-            border: none;
-            outline: none;
-        }
-
-        /* ==========================================
-           2. HEADER & NAVIGATION BAR
-           ========================================== */
+        /* Header / الشريط العلوي */
         header {
             background-color: #ffffff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            padding: 10px 25px;
+            border-bottom: 1px solid #ddd;
+            padding: 10px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         .logo {
-            font-size: 26px;
-            font-weight: 800;
-            color: #1877f2;
-            letter-spacing: -0.5px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
         }
 
-        .search-bar {
-            background-color: #f0f2f5;
-            border-radius: 20px;
-            padding: 8px 16px;
+        .header-controls {
             display: flex;
             align-items: center;
-            gap: 8px;
-        }
-
-        .search-bar input {
-            border: none;
-            background: transparent;
-            outline: none;
-            font-size: 14px;
-            width: 180px;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .nav-btn {
-            background: #e4e6eb;
-            color: #050505;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: background-color 0.2s ease, transform 0.1s ease;
-        }
-
-        .nav-btn:hover {
-            background-color: #d8dadf;
-        }
-
-        .nav-btn:active {
-            transform: scale(0.98);
-        }
-
-        .nav-icon-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #e4e6eb;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            transition: background-color 0.2s;
-        }
-
-        .nav-icon-btn:hover {
-            background-color: #d8dadf;
-        }
-
-        /* ==========================================
-           3. MAIN LAYOUT CONTAINER
-           ========================================== */
-        .app-layout {
-            display: flex;
-            justify-content: center;
-            gap: 25px;
-            max-width: 1200px;
-            width: 100%;
-            margin: 20px auto;
-            padding: 0 15px;
-        }
-
-        /* Sidebar Styles */
-        .sidebar {
-            width: 280px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .sidebar-card {
-            background: #ffffff;
-            border-radius: 10px;
-            padding: 15px;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
-
-        .sidebar-menu {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .sidebar-menu li a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 12px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 14px;
-            color: #050505;
-            transition: background 0.2s;
-        }
-
-        .sidebar-menu li a:hover {
-            background-color: #f0f2f5;
-        }
-
-        /* Main Content Feed */
-        .feed-container {
-            flex: 1;
-            max-width: 650px;
-        }
-
-        /* Create Post Box */
-        .create-post-card {
-            background: #ffffff;
-            border-radius: 10px;
-            padding: 15px;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-
-        .create-post-header {
-            display: flex;
             gap: 10px;
-            align-items: center;
-            margin-bottom: 12px;
         }
 
-        .create-post-header input {
-            flex: 1;
-            background: #f0f2f5;
-            border: none;
-            border-radius: 20px;
-            padding: 10px 18px;
-            font-size: 14px;
-            outline: none;
-        }
-
-        .create-post-actions {
-            display: flex;
-            justify-content: space-around;
-            border-top: 1px solid #e4e6eb;
-            padding-top: 10px;
-        }
-
-        .create-btn {
-            background: transparent;
-            color: #65676b;
-            font-weight: 600;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+        .header-btn {
+            background: #eef2f5;
+            border: 1px solid #ccc;
             padding: 6px 12px;
             border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
         }
 
-        .create-btn:hover {
-            background-color: #f2f2f2;
+        .header-btn:hover {
+            background: #e2e8f0;
         }
 
-        /* ==========================================
-           4. POST CARD STYLES
-           ========================================== */
+        .lang-select {
+            padding: 5px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            background: #fff;
+            font-size: 13px;
+        }
+
+        /* Container / المحتوى الرئيسي */
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 0 10px;
+        }
+
+        /* Post Card / بطاقة المنشور والمنتج */
         .post-card {
             background: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
             margin-bottom: 20px;
-            padding: 16px;
+            overflow: hidden;
         }
 
         .post-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .user-info {
+            padding: 12px 15px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
-        .avatar {
-            width: 42px;
-            height: 42px;
+        .seller-avatar {
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
-            background-color: #1877f2;
-            color: #ffffff;
+            background: #27ae60;
+            color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 16px;
         }
 
-        .avatar.green { background-color: #28a745; }
-        .avatar.purple { background-color: #6f42c1; }
-
-        .user-details h4 {
-            font-size: 15px;
-            font-weight: 700;
-            color: #050505;
+        .seller-info h4 {
+            font-size: 14px;
+            margin-bottom: 2px;
         }
 
-        .user-details span {
-            font-size: 12px;
-            color: #65676b;
+        .seller-info span {
+            font-size: 11px;
+            color: #777;
         }
 
-        .post-settings-btn {
-            background: transparent;
-            border: none;
-            font-size: 18px;
-            color: #65676b;
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s;
-        }
-
-        .post-settings-btn:hover {
-            background-color: #f0f2f5;
-        }
-
-        .post-body {
-            font-size: 14.5px;
-            line-height: 1.6;
-            color: #050505;
-            margin-bottom: 15px;
-        }
-
-        .post-media {
+        .product-image {
             width: 100%;
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 12px;
-            background-color: #e4e6eb;
             height: 250px;
+            background-color: #eee;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #65676b;
+            color: #888;
             font-size: 14px;
         }
 
-        /* Stats Section */
-        .post-stats {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #e4e6eb;
+        .product-details {
+            padding: 15px;
+        }
+
+        .product-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .product-price {
+            font-size: 15px;
+            color: #27ae60;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .product-description {
             font-size: 13px;
-            color: #65676b;
+            color: #555;
+            line-height: 1.4;
         }
 
-        .stats-left, .stats-right {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        /* Post Action Buttons */
+        /* Post Actions / أزرا التفاعل أسفل كل منشور */
         .post-actions {
             display: flex;
-            justify-content: space-around;
-            padding: 4px 0;
-            border-bottom: 1px solid #e4e6eb;
+            justify-content: space-between;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+            padding: 5px 0;
+            background: #fafafa;
         }
 
         .action-btn {
+            flex: 1;
             background: transparent;
             border: none;
-            padding: 8px 10px;
-            flex: 1;
-            border-radius: 6px;
-            font-size: 13.5px;
-            font-weight: 600;
-            color: #65676b;
+            padding: 8px 0;
+            font-size: 13px;
+            color: #555;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
-            transition: background-color 0.2s, color 0.2s;
+            gap: 5px;
         }
 
         .action-btn:hover {
-            background-color: #f2f2f2;
+            background: #f0f0f0;
         }
 
         .action-btn.liked {
@@ -371,189 +178,179 @@
             color: #f39c12;
         }
 
-        /* ==========================================
-           5. COMMENTS SECTION
-           ========================================== */
-        .comments-container {
-            margin-top: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+        /* Comments Section / قسم التعليقات */
+        .comments-section {
+            padding: 12px 15px;
+            background: #fff;
         }
 
-        .comment-input-area {
+        .comment-input-group {
             display: flex;
-            gap: 10px;
-            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
         }
 
-        .comment-input-area input {
+        .comment-input-group input {
             flex: 1;
-            border: 1px solid #ccd0d5;
-            background-color: #f0f2f5;
-            border-radius: 20px;
-            padding: 9px 16px;
-            font-size: 13.5px;
+            padding: 7px 12px;
+            border: 1px solid #ccc;
+            border-radius: 15px;
+            font-size: 12px;
             outline: none;
-            transition: border-color 0.2s, background-color 0.2s;
         }
 
-        .comment-input-area input:focus {
-            background-color: #ffffff;
-            border-color: #1877f2;
-        }
-
-        .send-comment-btn {
-            background-color: #1877f2;
-            color: #ffffff;
+        .comment-input-group button {
+            background: #27ae60;
+            color: white;
             border: none;
-            padding: 8px 16px;
-            border-radius: 18px;
-            font-size: 13px;
-            font-weight: bold;
-            transition: background 0.2s;
-        }
-
-        .send-comment-btn:hover {
-            background-color: #166fe5;
+            padding: 7px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            cursor: pointer;
         }
 
         .comments-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
 
         .comment-item {
-            display: flex;
-            gap: 10px;
-            align-items: flex-start;
+            font-size: 12px;
+            background: #f4f6f8;
+            padding: 6px 10px;
+            border-radius: 8px;
         }
 
-        .comment-bubble {
-            background-color: #f0f2f5;
-            padding: 8px 14px;
-            border-radius: 16px;
-            max-width: 85%;
-        }
-
-        .comment-author-name {
-            font-size: 12.5px;
-            font-weight: bold;
-            color: #050505;
-        }
-
-        .comment-text-content {
-            font-size: 13px;
-            color: #1c1e21;
-            margin-top: 2px;
-        }
-
-        .comment-actions-meta {
-            display: flex;
-            gap: 12px;
-            margin-top: 4px;
-            margin-right: 12px;
-            font-size: 11px;
-            color: #65676b;
-        }
-
-        .comment-actions-meta span {
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .comment-actions-meta span:hover {
-            text-decoration: underline;
-        }
-
-        /* Responsive Breakpoints */
-        @media (max-width: 850px) {
-            .sidebar {
-                display: none;
-            }
-            .app-layout {
-                justify-content: center;
-            }
+        .comment-item strong {
+            color: #333;
         }
     </style>
 </head>
 <body>
 
-    <!-- ==========================================
-         HEADER / NAVBAR SECTION
-         ========================================== -->
+    <!-- Header: شريط التحكم العلوي -->
     <header>
-        <div class="header-left">
-            <div class="logo">منصتي</div>
-            <div class="search-bar">
-                <span>🔍</span>
-                <input type="text" placeholder="بحث في المنصة...">
-            </div>
-        </div>
+        <div class="logo">متجري</div>
+        
+        <div class="header-controls">
+            <!-- تغيير اللغة -->
+            <select class="lang-select" onchange="changeLanguage(this.value)">
+                <option value="ar">العربية</option>
+                <option value="fr">Français</option>
+                <option value="en">English</option>
+            </select>
 
-        <div class="header-right">
             <!-- زر الملف الشخصي -->
-            <button class="nav-btn" onclick="openProfileModal()">
-                <span>👤</span>
-                <span>الملف الشخصي</span>
-            </button>
-
+            <button class="header-btn" onclick="openProfile()">👤 الملف الشخصي</button>
+            
             <!-- زر الإعدادات -->
-            <button class="nav-btn" onclick="openSettingsModal()">
-                <span>⚙️</span>
-                <span>الإعدادات</span>
-            </button>
-
-            <!-- أزرار الإشعارات والرسائل -->
-            <button class="nav-icon-btn" title="الإشعارات" onclick="alert('لا توجد إشعارات جديدة')">
-                🔔
-            </button>
-            <button class="nav-icon-btn" title="الرسائل" onclick="alert('القائمة المباشرة فارغة')">
-                💬
-            </button>
+            <button class="header-btn" onclick="openSettings()">⚙️ الإعدادات</button>
         </div>
     </header>
 
-    <!-- ==========================================
-         MAIN LAYOUT & CONTENT
-         ========================================== -->
-    <div class="app-layout">
+    <!-- Content: المنشورات والمنتجات -->
+    <div class="container">
 
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar">
-            <div class="sidebar-card">
-                <ul class="sidebar-menu">
-                    <li><a href="#">🏠 الصفحة الرئيسية</a></li>
-                    <li><a href="#" onclick="openProfileModal()">👤 الملف الشخصي</a></li>
-                    <li><a href="#" onclick="openSettingsModal()">⚙️ إعدادات الحساب</a></li>
-                    <li><a href="#">🔖 المنشورات المحفوظة</a></li>
-                    <li><a href="#">👥 المجموعات والأصدقاء</a></li>
-                </ul>
-            </div>
-        </aside>
-
-        <!-- Feed Container -->
-        <main class="feed-container">
-
-            <!-- Create Post Card -->
-            <div class="create-post-card">
-                <div class="create-post-header">
-                    <div class="avatar">أ</div>
-                    <input type="text" placeholder="بماذا تفكر اليوم؟">
-                </div>
-                <div class="create-post-actions">
-                    <button class="create-btn">📷 صورة/فيديو</button>
-                    <button class="create-btn">🏷️ إشارة لصديق</button>
-                    <button class="create-btn">😊 شعور/نشاط</button>
+        <!-- المنشور الأول -->
+        <div class="post-card">
+            <div class="post-header">
+                <div class="seller-avatar">ع</div>
+                <div class="seller-info">
+                    <h4>علي السلاوي</h4>
+                    <span>قبل 15 دقيقة • الدار البيضاء</span>
                 </div>
             </div>
 
-            <!-- POST CARD 1 -->
-            <div class="post-card" id="post-1">
-                <!-- Post Header -->
-                <div class="post-header">
-                    <div class="user-info">
-                        <div class="avatar">أ</div>
-                        <div class="user-details">
-                            
+            <!-- صورة المنتج -->
+            <div class="product-image">
+                [صورة صورة الهاتف / المنتج]
+            </div>
+
+            <div class="product-details">
+                <div class="product-title">هاتف مستعمل بحالة ممتازة</div>
+                <div class="product-price">2500 درهم</div>
+                <div class="product-description">
+                    للبيع هاتف ممتازي بدون أي عيوب، مع الشاحن والعلبة الأصلية.
+                </div>
+            </div>
+
+            <!-- أزرار التفاعل تحت المنشور -->
+            <div class="post-actions">
+                <button class="action-btn" onclick="toggleLike(this)">❤️ إعجاب</button>
+                <button class="action-btn" onclick="focusComment('comment-1')">💬 تعليق</button>
+                <button class="action-btn" onclick="sharePost()">↗️ مشاركة</button>
+                <button class="action-btn" onclick="toggleSave(this)">🔖 حفظ</button>
+            </div>
+
+            <!-- التعليقات -->
+            <div class="comments-section">
+                <div class="comment-input-group">
+                    <input type="text" id="comment-1" placeholder="اكتب تعليقاً واسأل البائع...">
+                    <button onclick="addComment('comment-1', 'list-1')">إرسال</button>
+                </div>
+                <div class="comments-list" id="list-1">
+                    <div class="comment-item">
+                        <strong>ياسين:</strong> واش السعر قابل للتفاوض؟
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JavaScript الأساسي للتفاعلات -->
+    <script>
+        function openProfile() {
+            alert("فتح شاشة الملف الشخصي");
+        }
+
+        function openSettings() {
+            alert("فتح شاشة الإعدادات");
+        }
+
+        function changeLanguage(lang) {
+            alert("تم تغيير اللغة إلى: " + lang);
+        }
+
+        function toggleLike(btn) {
+            btn.classList.toggle('liked');
+            if(btn.classList.contains('liked')) {
+                btn.innerHTML = "❤️ تم الإعجاب";
+            } else {
+                btn.innerHTML = "❤️ إعجاب";
+            }
+        }
+
+        function toggleSave(btn) {
+            btn.classList.toggle('saved');
+            if(btn.classList.contains('saved')) {
+                btn.innerHTML = "🔖 تم الحفظ";
+            } else {
+                btn.innerHTML = "🔖 حفظ";
+            }
+        }
+
+        function sharePost() {
+            alert("تم نسخ رابط المنشور للمشاركة");
+        }
+
+        function focusComment(inputId) {
+            document.getElementById(inputId).focus();
+        }
+
+        function addComment(inputId, listId) {
+            let input = document.getElementById(inputId);
+            let text = input.value.trim();
+            if(text !== "") {
+                let list = document.getElementById(listId);
+                let newComment = document.createElement('div');
+                newComment.className = 'comment-item';
+                newComment.innerHTML = '<strong>أنت:</strong> ' + text;
+                list.appendChild(newComment);
+                input.value = "";
+            }
+        }
+    </script>
+</body>
+</html>
